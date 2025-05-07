@@ -1,0 +1,131 @@
+{
+  "meta": {
+    "generatedAt": "2025-05-07T18:28:33.499Z",
+    "tasksAnalyzed": 15,
+    "thresholdScore": 5,
+    "projectName": "Your Project Name",
+    "usedResearch": true
+  },
+  "complexityAnalysis": [
+    {
+      "taskId": 1,
+      "taskTitle": "Project Repository Setup",
+      "complexityScore": 3,
+      "recommendedSubtasks": 5,
+      "expansionPrompt": "Break down the steps to initialize a repository, configure version control, create essential documentation, set up ignore rules, and establish branch protection policies.",
+      "reasoning": "This task involves standard setup activities with low technical complexity but requires attention to detail and best practices for version control and repository management."
+    },
+    {
+      "taskId": 2,
+      "taskTitle": "Development Environment Configuration",
+      "complexityScore": 4,
+      "recommendedSubtasks": 6,
+      "expansionPrompt": "Detail the configuration of package managers, dependency management, linting and formatting tools, and documentation of environment setup for team consistency.",
+      "reasoning": "While straightforward, this task requires integration of multiple tools and ensuring consistency across environments, which adds moderate complexity."
+    },
+    {
+      "taskId": 3,
+      "taskTitle": "Database Schema Design",
+      "complexityScore": 7,
+      "recommendedSubtasks": 6,
+      "expansionPrompt": "Outline the design of data models, relationships, constraints, indexing strategies, ERD creation, and documentation focusing on scalability and performance.",
+      "reasoning": "Designing a scalable and performant database schema involves complex decision-making around data relationships, constraints, and indexing."
+    },
+    {
+      "taskId": 4,
+      "taskTitle": "API Architecture Design",
+      "complexityScore": 7,
+      "recommendedSubtasks": 6,
+      "expansionPrompt": "Define RESTful endpoints, request/response formats, authentication, error handling, and create an OpenAPI/Swagger specification document.",
+      "reasoning": "API design requires careful planning of endpoints, security, and documentation to ensure maintainability and usability."
+    },
+    {
+      "taskId": 5,
+      "taskTitle": "Authentication System Implementation",
+      "complexityScore": 8,
+      "recommendedSubtasks": 7,
+      "expansionPrompt": "Detail user registration, login/logout, password reset, session management, JWT or session-based auth setup, role-based access control, and route security.",
+      "reasoning": "Authentication involves security-sensitive implementations and multiple interrelated features, increasing complexity and risk."
+    },
+    {
+      "taskId": 6,
+      "taskTitle": "Database Integration",
+      "complexityScore": 7,
+      "recommendedSubtasks": 6,
+      "expansionPrompt": "Break down database connection setup, ORM or query builder implementation, migration scripts creation, data access layer coding, error handling, and connection pooling.",
+      "reasoning": "Integrating the database requires careful handling of connections, migrations, and error management, which adds moderate to high complexity."
+    },
+    {
+      "taskId": 7,
+      "taskTitle": "Core API Endpoints Implementation",
+      "complexityScore": 8,
+      "recommendedSubtasks": 7,
+      "expansionPrompt": "Implement CRUD operations, input validation, error handling, HTTP status codes, and response formatting for primary resources.",
+      "reasoning": "This task is complex due to the need for robust, secure, and well-structured API endpoints with proper validation and error management."
+    },
+    {
+      "taskId": 8,
+      "taskTitle": "Frontend Scaffolding and Routing",
+      "complexityScore": 5,
+      "recommendedSubtasks": 5,
+      "expansionPrompt": "Initialize frontend framework, configure routing, implement basic layout components, and set up state management.",
+      "reasoning": "Setting up frontend scaffolding involves multiple technologies but is generally straightforward with established frameworks and patterns."
+    },
+    {
+      "taskId": 9,
+      "taskTitle": "User Interface Components Development",
+      "complexityScore": 6,
+      "recommendedSubtasks": 6,
+      "expansionPrompt": "Develop reusable UI components like forms, buttons, modals, navigation, ensuring adherence to design systems and accessibility standards.",
+      "reasoning": "UI component development requires attention to design consistency and accessibility, adding moderate complexity."
+    },
+    {
+      "taskId": 10,
+      "taskTitle": "API Integration with Frontend",
+      "complexityScore": 7,
+      "recommendedSubtasks": 6,
+      "expansionPrompt": "Implement API client/service layer, manage authentication tokens, set up request/response interceptors, and handle API error scenarios.",
+      "reasoning": "Integrating frontend with backend APIs involves managing asynchronous communication, authentication, and error handling, which is moderately complex."
+    },
+    {
+      "taskId": 11,
+      "taskTitle": "Feature-Specific UI Implementation",
+      "complexityScore": 6,
+      "recommendedSubtasks": 6,
+      "expansionPrompt": "Develop UI screens for features, implement form validation, loading states, error handling, and ensure responsive design.",
+      "reasoning": "Feature UI implementation requires detailed work on user experience and responsiveness, with moderate complexity."
+    },
+    {
+      "taskId": 12,
+      "taskTitle": "Comprehensive Testing Suite",
+      "complexityScore": 8,
+      "recommendedSubtasks": 7,
+      "expansionPrompt": "Create unit tests for logic, integration tests for APIs, end-to-end tests for user flows, and performance tests for critical operations.",
+      "reasoning": "Testing across multiple layers and types requires thorough planning and implementation, increasing complexity significantly."
+    },
+    {
+      "taskId": 13,
+      "taskTitle": "Performance Optimization",
+      "complexityScore": 7,
+      "recommendedSubtasks": 5,
+      "expansionPrompt": "Profile performance, optimize database queries, implement caching, reduce frontend bundle size, and improve loading times.",
+      "reasoning": "Performance tuning involves identifying bottlenecks across the stack and applying targeted optimizations, which is moderately complex."
+    },
+    {
+      "taskId": 14,
+      "taskTitle": "Deployment Configuration",
+      "complexityScore": 6,
+      "recommendedSubtasks": 6,
+      "expansionPrompt": "Configure CI/CD pipelines, set up staging and production environments, implement infrastructure as code, and document deployment processes.",
+      "reasoning": "Deployment setup requires coordination of multiple tools and environments but follows established DevOps practices."
+    },
+    {
+      "taskId": 15,
+      "taskTitle": "Documentation and Knowledge Transfer",
+      "complexityScore": 4,
+      "recommendedSubtasks": 5,
+      "expansionPrompt": "Document API endpoints, user guides, architecture decisions, troubleshooting guides, and plan knowledge transfer sessions.",
+      "reasoning": "Documentation and knowledge transfer are essential but less technically complex, focusing on clarity and completeness."
+    }
+  ]
+}
