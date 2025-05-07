@@ -1,0 +1,23 @@
+# Normalize all text files to LF line endings on checkout
+* text=auto eol=lf
+
+# Denote all files that should be treated as binary and should not be normalized or diffed
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.pdf binary
+*.zip binary
+*.gz binary
+*.tgz binary
+*.woff binary
+*.woff2 binary
+*.eot binary
+*.ttf binary
+*.otf binary
+
+# For specific file types where merge conflicts are common and a specific strategy is preferred (optional)
+# Example for package-lock.json or yarn.lock if you always want to take 'ours' or 'theirs'
+# package-lock.json merge=ours
+# yarn.lock merge=ours 
