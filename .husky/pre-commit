@@ -1,0 +1,17 @@
+#!/usr/bin/env sh
+# Try sourcing relative to git dir
+if [ -z "$HUSKY_GIT_PARAMS" ]; then
+    . "$(git rev-parse --git-dir)/hooks/husky.sh"
+fi
+
+echo "Running pre-commit hook: lint-staged..."
+pnpm exec lint-staged --allow-empty --concurrent false
+
+EXIT_CODE=$?
+if [ $EXIT_CODE -ne 0 ]; then
+  echo "Pre-commit hook failed (lint-staged). Please fix errors and try committing again."
+  exit $EXIT_CODE
+fi
+
+echo "Pre-commit hook passed."
+exit 0
