@@ -24,7 +24,7 @@
   "keywords": [],
   "author": "mreatwell",
   "license": "MIT",
-  "type": "commonjs",
+  "type": "module",
   "bugs": {
     "url": "https://github.com/mreatwell/gptube/issues"
   },
