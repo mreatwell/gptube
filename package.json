@@ -1,0 +1,35 @@
+{
+  "name": "gptube",
+  "version": "0.1.0",
+  "private": true,
+  "description": "The YouTube Tutorial Companion is a web application designed to transform YouTube video tutorials into structured, actionable guides. It allows users to input a YouTube video URL and receive a transcript, AI-generated summary, step-by-step instructions, and clarifications.",
+  "main": "src/pages/index.js",
+  "directories": {
+    "doc": "docs",
+    "test": "tests"
+  },
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mreatwell/gptube.git"
+  },
+  "keywords": [],
+  "author": "mreatwell",
+  "license": "MIT",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/mreatwell/gptube/issues"
+  },
+  "homepage": "https://github.com/mreatwell/gptube#readme",
+  "dependencies": {
+    "next": "^15.3.2",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0"
+  }
+}
