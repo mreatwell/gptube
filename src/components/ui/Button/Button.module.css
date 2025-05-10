@@ -1,0 +1,26 @@
+/* src/components/ui/Button/Button.module.css */
+
+/* Example usage:
+.button {
+  padding: 10px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.primary {
+  background-color: #0070f3;
+  color: white;
+}
+
+.secondary {
+  background-color: #eaeaea;
+  color: #333;
+  border: 1px solid #ccc;
+}
+
+.disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+*/
