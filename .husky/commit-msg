@@ -1,11 +1,6 @@
 #!/usr/bin/env sh
-# Try sourcing relative to git dir
-if [ -z "$HUSKY_GIT_PARAMS" ]; then
-    . "$(git rev-parse --git-dir)/hooks/husky.sh"
-fi
-
 echo "Running commit-msg hook: commitlint..."
-pnpm exec commitlint --edit "$1"
+npx commitlint --edit "$1"
 
 EXIT_CODE=$?
 if [ $EXIT_CODE -ne 0 ]; then

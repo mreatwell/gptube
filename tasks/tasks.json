@@ -4,7 +4,7 @@
       "id": 1,
       "title": "Project Repository Setup",
       "description": "Initialize project repository with basic structure and configuration files",
-      "status": "pending",
+      "status": "done",
       "dependencies": [],
       "priority": "high",
       "details": "Create a new repository, set up version control, add README.md with project overview, configure .gitignore for the appropriate tech stack, and establish branch protection rules for main/master branch",
@@ -27,7 +27,7 @@
             1
           ],
           "details": "1. Create a comprehensive .gitignore file appropriate for your tech stack:\n   - Use gitignore.io to generate a base template for your languages/frameworks\n   - Add common patterns for:\n     - Build artifacts and compiled code\n     - Dependency directories (node_modules, vendor, etc.)\n     - Environment files (.env, .env.local)\n     - IDE configuration files (.idea/, .vscode/)\n     - Log files and temporary files\n2. Create a .gitattributes file to:\n   - Set line ending normalization (text=auto)\n   - Define binary files (*.png binary)\n   - Set merge strategies for commonly conflicting files\n3. Test the .gitignore by creating sample files that should be ignored\n4. Commit and push these configuration files\n\nTesting approach: Create sample files that should be ignored (like node_modules/ or .env) and verify they don't appear in 'git status' output.",
-          "status": "in-progress",
+          "status": "done",
           "parentTaskId": 1
         },
         {
@@ -38,7 +38,7 @@
             1
           ],
           "details": "1. Navigate to repository settings on your hosting platform\n2. Set up branch protection rules for main/master branch:\n   - Require pull request reviews before merging\n   - Require at least one approval before merging\n   - Dismiss stale pull request approvals when new commits are pushed\n   - Require status checks to pass before merging (if CI/CD is set up)\n   - Require branches to be up to date before merging\n   - Do not allow bypassing the above settings\n3. Document these protection rules in the README.md\n4. Create a CONTRIBUTING.md file explaining the branch workflow:\n   - Feature branch naming convention (e.g., feature/feature-name)\n   - Commit message guidelines\n   - Pull request process\n5. Test the protection by attempting to push directly to the protected branch\n\nTesting approach: Attempt to push directly to the main/master branch and verify it's rejected; create a test PR and verify it requires reviews before merging.",
-          "status": "pending",
+          "status": "done",
           "parentTaskId": 1
         },
         {
@@ -50,7 +50,7 @@
             2
           ],
           "details": "1. Choose a CI/CD platform (GitHub Actions, GitLab CI, CircleCI, etc.)\n2. Create configuration file(s) in the appropriate location:\n   - For GitHub Actions: .github/workflows/ci.yml\n   - For GitLab CI: .gitlab-ci.yml\n   - For CircleCI: .circleci/config.yml\n3. Configure basic CI pipeline with the following stages:\n   - Lint: Check code formatting and style\n   - Build: Compile or build the project\n   - Test: Run unit tests\n4. Set up notifications for pipeline failures\n5. Document the CI/CD process in the README.md\n6. Test the pipeline by making a small change and creating a pull request\n\nTesting approach: Make a small change, push it to a feature branch, create a PR, and verify the CI pipeline runs automatically and performs all configured checks.",
-          "status": "pending",
+          "status": "done",
           "parentTaskId": 1
         },
         {
@@ -63,7 +63,7 @@
             4
           ],
           "details": "1. Create configuration templates for different environments:\n   - Create config/template.env with all required environment variables\n   - Add config/example.env with sample values (safe to commit)\n   - Document that .env files should never be committed (already in .gitignore)\n2. If using infrastructure as code:\n   - Add terraform/ or cloudformation/ directory\n   - Create environment-specific variable files (dev.tfvars, prod.tfvars)\n   - Add a basic infrastructure setup script\n3. For containerized applications:\n   - Add Dockerfile and docker-compose.yml\n   - Configure multi-stage builds for development and production\n4. Create a setup script (setup.sh or setup.ps1) to:\n   - Check for required dependencies\n   - Initialize configuration files from templates\n   - Set up pre-commit hooks (optional)\n5. Update README.md with detailed setup instructions\n\nTesting approach: Run the setup script on a clean environment and verify it correctly initializes all configuration files and prepares the project for development.",
-          "status": "pending",
+          "status": "done",
           "parentTaskId": 1
         }
       ]
@@ -72,43 +72,149 @@
       "id": 2,
       "title": "Development Environment Configuration",
       "description": "Set up consistent development environment with necessary tools and dependencies",
-      "status": "pending",
+      "status": "done",
       "dependencies": [
         1
       ],
       "priority": "high",
       "details": "Configure package manager (npm/yarn), create package.json with initial dependencies, set up linting and code formatting tools (ESLint, Prettier), and document environment setup process for team members",
-      "testStrategy": "Verify that all team members can successfully set up the development environment and run basic commands"
+      "testStrategy": "Verify that all team members can successfully set up the development environment and run basic commands",
+      "subtasks": [
+        {
+          "id": 1,
+          "title": "Initialize Project with Package Manager Configuration",
+          "description": "Set up the project with npm/yarn and create a comprehensive package.json file with initial dependencies and scripts",
+          "dependencies": [],
+          "details": "1. Choose between npm or yarn as the package manager (yarn offers better performance and deterministic installations)\n2. Initialize the project with `npm init` or `yarn init` using the `-y` flag for default settings\n3. Configure package.json with project metadata (name, version, description, author, license)\n4. Add initial dependencies categorized as dependencies and devDependencies\n5. Set up common npm scripts for development workflow (start, build, test)\n6. Configure npm/yarn to use a specific version range strategy (e.g., using ^ or ~ for version ranges)\n7. Add a .npmrc or .yarnrc file for team-wide package manager configurations\n8. Test the configuration by installing dependencies and running a basic script\n\n<info added on 2025-05-08T06:21:38.866Z>\nGreat progress on the initialization! Here's additional information to add:\n\nFor package.json configuration:\n- Added \"type\": \"module\" to support ES modules syntax\n- Set \"engines\": { \"node\": \">=18.0.0\" } to ensure compatibility with Next.js requirements\n- Added \"browserslist\" configuration for proper transpilation targets\n\nFor dependencies:\n- Installed ESLint and Prettier dev dependencies with Next.js recommended configs\n- Added TypeScript support with @types/react and @types/react-dom\n- Configured Jest with testing-library for component testing\n\nAdditional configurations:\n- Created .nvmrc file with \"18\" to standardize Node.js version across team\n- Added .gitignore with appropriate patterns for Next.js projects\n- Set up VSCode settings.json with recommended extensions for the project\n\nVerified the setup by running `npm run dev` successfully and confirming hot reloading works.\n</info added on 2025-05-08T06:21:38.866Z>",
+          "status": "done",
+          "parentTaskId": 2
+        },
+        {
+          "id": 2,
+          "title": "Configure Code Quality Tools (ESLint and Prettier)",
+          "description": "Set up and configure ESLint for code linting and Prettier for code formatting with appropriate rules and plugins",
+          "dependencies": [
+            1
+          ],
+          "details": "1. Install ESLint and Prettier as dev dependencies: `npm install --save-dev eslint prettier eslint-config-prettier eslint-plugin-prettier`\n2. Create ESLint configuration file (.eslintrc.js or .eslintrc.json) with appropriate rules for the project\n3. Configure Prettier with a .prettierrc file defining code style rules (indentation, quotes, semicolons, etc.)\n4. Set up ESLint-Prettier integration to avoid conflicts between the two tools\n5. Add lint and format scripts to package.json: `\"lint\": \"eslint . --ext .js,.jsx,.ts,.tsx\"` and `\"format\": \"prettier --write '**/*.{js,jsx,ts,tsx,json,css,md}'`\n6. Create .eslintignore and .prettierignore files to exclude build artifacts, node_modules, etc.\n7. Configure VS Code settings (settings.json) for ESLint and Prettier integration\n8. Test the setup by running lint and format commands on sample files\n\n<info added on 2025-05-08T06:25:38.653Z>\nHere's the additional information to add:\n\nFor .eslintrc.json, consider these specific rules for Next.js projects:\n```json\n{\n  \"extends\": [\"next/core-web-vitals\", \"plugin:prettier/recommended\"],\n  \"rules\": {\n    \"react/react-in-jsx-scope\": \"off\",\n    \"react/prop-types\": \"off\",\n    \"no-unused-vars\": [\"error\", { \"argsIgnorePattern\": \"^_\", \"varsIgnorePattern\": \"^_\" }],\n    \"import/order\": [\"error\", {\n      \"groups\": [\"builtin\", \"external\", \"internal\", \"parent\", \"sibling\", \"index\"],\n      \"newlines-between\": \"always\",\n      \"alphabetize\": { \"order\": \"asc\", \"caseInsensitive\": true }\n    }]\n  }\n}\n```\n\nFor .prettierrc.json, these are the specific values used:\n```json\n{\n  \"semi\": true,\n  \"trailingComma\": \"es5\",\n  \"singleQuote\": true,\n  \"printWidth\": 100,\n  \"tabWidth\": 2,\n  \"useTabs\": false,\n  \"endOfLine\": \"lf\"\n}\n```\n\nThe .vscode/settings.json configuration includes:\n```json\n{\n  \"editor.formatOnSave\": true,\n  \"editor.defaultFormatter\": \"esbenp.prettier-vscode\",\n  \"editor.codeActionsOnSave\": {\n    \"source.fixAll.eslint\": true\n  },\n  \"eslint.validate\": [\"javascript\", \"javascriptreact\", \"typescript\", \"typescriptreact\"]\n}\n```\n\nAdded husky and lint-staged for pre-commit hooks:\n```bash\nnpm install --save-dev husky lint-staged\nnpx husky install\nnpx husky add .husky/pre-commit \"npx lint-staged\"\n```\n\nWith this lint-staged configuration in package.json:\n```json\n\"lint-staged\": {\n  \"*.{js,jsx,ts,tsx}\": [\"eslint --fix\", \"prettier --write\"],\n  \"*.{json,css,md}\": [\"prettier --write\"]\n}\n```\n</info added on 2025-05-08T06:25:38.653Z>",
+          "status": "done",
+          "parentTaskId": 2
+        },
+        {
+          "id": 3,
+          "title": "Implement Git Hooks and Commit Standards",
+          "description": "Set up Git hooks using Husky and lint-staged to enforce code quality standards and consistent commit messages",
+          "dependencies": [
+            2
+          ],
+          "details": "1. Install Husky and lint-staged: `npm install --save-dev husky lint-staged commitlint @commitlint/config-conventional`\n2. Configure Husky in package.json or through a dedicated .husky directory\n3. Set up pre-commit hooks to run linting and formatting on staged files\n4. Configure lint-staged in package.json to run ESLint and Prettier only on changed files\n5. Set up commitlint with conventional commit standards\n6. Add a commit-msg hook to validate commit message format\n7. Create a .commitlintrc.js file with rules for commit message format\n8. Add a CONTRIBUTING.md file documenting the commit message format and workflow\n9. Test the Git hooks by making sample commits with both valid and invalid formats\n\n<info added on 2025-05-08T06:29:52.435Z>\n**Implementation Details:**\n\n- Husky initialization command used: `npx husky install`\n- Added prepare script to package.json: `\"prepare\": \"husky install\"`\n- Pre-commit hook content:\n  ```bash\n  #!/bin/sh\n  . \"$(dirname \"$0\")/_/husky.sh\"\n  \n  npx lint-staged\n  ```\n- Lint-staged configuration in package.json:\n  ```json\n  \"lint-staged\": {\n    \"*.{js,jsx,ts,tsx}\": [\n      \"eslint --fix\",\n      \"prettier --write\"\n    ],\n    \"*.{json,css,md}\": [\n      \"prettier --write\"\n    ]\n  }\n  ```\n- Commit-msg hook content:\n  ```bash\n  #!/bin/sh\n  . \"$(dirname \"$0\")/_/husky.sh\"\n  \n  npx --no -- commitlint --edit $1\n  ```\n- .commitlintrc.json content:\n  ```json\n  {\n    \"extends\": [\"@commitlint/config-conventional\"],\n    \"rules\": {\n      \"body-max-line-length\": [2, \"always\", 100]\n    }\n  }\n  ```\n- Added commit message examples to CONTRIBUTING.md:\n  ```\n  feat: add user authentication\n  fix: resolve issue with API response handling\n  docs: update installation instructions\n  style: format code according to style guide\n  refactor: simplify data processing logic\n  test: add unit tests for user service\n  chore: update dependencies\n  ```\n- Verified hooks work by testing with invalid commit message format\n</info added on 2025-05-08T06:29:52.435Z>\n\n<info added on 2025-05-08T06:32:39.029Z>\n<info added on 2025-05-09T14:22:18.435Z>\n**Debugging Husky Hook Execution:**\n\n- The \"husky.sh not found\" error typically occurs when Husky wasn't properly initialized or the Git hooks weren't installed correctly\n- Fix steps:\n  1. Verify Husky installation: `npm ls husky`\n  2. Reinstall Husky with: `npm uninstall husky && npm install --save-dev husky`\n  3. Manually initialize: `npx husky install`\n  4. Check permissions on .husky directory: `chmod +x .husky/*`\n\n- Alternative hook setup using package.json scripts:\n  ```json\n  \"scripts\": {\n    \"precommit\": \"lint-staged\",\n    \"commitmsg\": \"commitlint -E HUSKY_GIT_PARAMS\"\n  }\n  ```\n\n- Added Git global hooks configuration:\n  ```bash\n  git config --global core.hooksPath .husky\n  ```\n\n- Created troubleshooting section in CONTRIBUTING.md with common hook issues and solutions\n- Added a bypass note explaining when `--no-verify` is appropriate (emergency fixes only)\n- Implemented a CI check to ensure commits follow conventions even if local hooks are bypassed\n</info added on 2025-05-09T14:22:18.435Z>\n</info added on 2025-05-08T06:32:39.029Z>",
+          "status": "done",
+          "parentTaskId": 2
+        },
+        {
+          "id": 4,
+          "title": "Containerize Development Environment with Docker",
+          "description": "Create Docker configuration to ensure consistent development environments across the team",
+          "dependencies": [
+            1,
+            2
+          ],
+          "details": "1. Create a Dockerfile for the development environment with all necessary dependencies\n2. Define a docker-compose.yml file for multi-container setup if needed\n3. Configure volume mappings for live code reloading during development\n4. Set up environment variables in a .env file (with .env.example for documentation)\n5. Configure Docker to use the same linting and formatting rules as the local environment\n6. Add Docker-specific npm scripts to package.json (e.g., `\"docker:dev\": \"docker-compose up\"`)\n7. Optimize the Docker image size using multi-stage builds and .dockerignore\n8. Document Docker commands and workflow in the README.md\n9. Test the Docker setup by building the image and running the container",
+          "status": "done",
+          "parentTaskId": 2
+        },
+        {
+          "id": 5,
+          "title": "Create Comprehensive Documentation and Onboarding Guide",
+          "description": "Document the development environment setup process and create an onboarding guide for team members",
+          "dependencies": [
+            1,
+            2,
+            3,
+            4
+          ],
+          "details": "1. Create a detailed README.md with project overview, setup instructions, and available commands\n2. Document environment requirements (Node.js version, etc.) and installation steps\n3. Create a step-by-step guide for setting up the development environment from scratch\n4. Document the purpose and configuration of each tool (ESLint, Prettier, Husky, Docker)\n5. Add troubleshooting sections for common issues developers might encounter\n6. Create a CONTRIBUTING.md file with workflow guidelines and best practices\n7. Document the CI/CD pipeline and deployment process if applicable\n8. Add inline documentation for complex configuration files\n9. Create a quick-start guide for new team members\n10. Test the documentation by having a team member follow it to set up their environment",
+          "status": "done",
+          "parentTaskId": 2
+        }
+      ]
     },
     {
       "id": 3,
       "title": "Database Schema Design",
       "description": "Design and document the database schema for the application",
-      "status": "pending",
+      "status": "done",
       "dependencies": [
         1
       ],
       "priority": "high",
-      "details": "Define data models, relationships, constraints, and indexes. Create an ERD (Entity Relationship Diagram) and document the schema design decisions. Consider scalability and performance requirements",
-      "testStrategy": "Review schema design with team members to ensure it meets all data requirements and follows best practices"
+      "details": "Define data models, relationships, constraints, and indexes for Firestore collections. The `processed_videos` collection has been implemented with Document ID = YouTube Video ID and fields including `youtubeUrl`, `transcriptOriginal`, `summaryAI`, `stepsAI`, `clarificationsAI`, `processedAt`, `status`, and `errorMessage`. Documentation has been created in `docs/firestore-schema.md` outlining the current schema and future considerations. Continue to refine and expand the schema as needed for additional collections.",
+      "testStrategy": "Review schema design with team members to ensure it meets all data requirements and follows best practices. Validate the implemented Firestore schema against actual application requirements.",
+      "subtasks": [
+        {
+          "id": 3.1,
+          "title": "Define Firestore schema for processed_videos collection",
+          "status": "done",
+          "description": "Defined Firestore schema for the `processed_videos` collection (Document ID = YouTube Video ID) with key fields: `youtubeUrl`, `transcriptOriginal`, `summaryAI`, `stepsAI`, `clarificationsAI`, `processedAt`, `status`, `errorMessage`."
+        },
+        {
+          "id": 3.2,
+          "title": "Create schema documentation",
+          "status": "done",
+          "description": "Created documentation file `docs/firestore-schema.md` outlining the schema and future considerations."
+        },
+        {
+          "id": 3.3,
+          "title": "Define additional collection schemas",
+          "status": "done",
+          "description": "Define schemas for any additional collections needed by the application, following the patterns established in the processed_videos collection."
+        },
+        {
+          "id": 3.4,
+          "title": "Implement indexing strategy",
+          "status": "done",
+          "description": "Determine and document which fields need to be indexed for optimal query performance."
+        }
+      ]
     },
     {
       "id": 4,
       "title": "API Architecture Design",
       "description": "Define the API architecture and endpoints for the application",
-      "status": "pending",
+      "status": "done",
       "dependencies": [
         3
       ],
       "priority": "high",
       "details": "Design RESTful API endpoints, document request/response formats, authentication mechanisms, and error handling strategies. Create an API specification document using OpenAPI/Swagger",
-      "testStrategy": "Review API design with team members to ensure it meets all functional requirements and follows RESTful principles"
+      "testStrategy": "Review API design with team members to ensure it meets all functional requirements and follows RESTful principles",
+      "subtasks": [
+        {
+          "id": 4.1,
+          "title": "Design RESTful API endpoints for MVP",
+          "description": "Designed core endpoints: POST /api/videos (submit URL), GET /api/videos/{videoId} (get status/results), POST /api/videos/{videoId}/chat (chat query)",
+          "status": "completed"
+        },
+        {
+          "id": 4.2,
+          "title": "Document request/response formats and error handling",
+          "description": "Outlined request/response formats and error handling strategy for all API endpoints",
+          "status": "completed"
+        },
+        {
+          "id": 4.3,
+          "title": "Create OpenAPI specification",
+          "description": "Created OpenAPI specification document in docs/api-spec.yaml",
+          "status": "completed"
+        }
+      ],
+      "completionNotes": "Successfully designed and documented the core API architecture for the MVP. The API includes endpoints for video submission, status retrieval, and chat functionality. All specifications are documented in the OpenAPI specification file."
     },
     {
       "id": 5,
       "title": "Authentication System Implementation",
       "description": "Implement user authentication and authorization functionality",
-      "status": "pending",
+      "status": "deferred",
       "dependencies": [
         2,
         4
@@ -121,13 +227,50 @@
       "id": 6,
       "title": "Database Integration",
       "description": "Implement database connection and ORM/query layer",
-      "status": "pending",
+      "status": "done",
       "dependencies": [
         3
       ],
       "priority": "high",
-      "details": "Set up database connection, implement ORM models or query builders, create migration scripts for schema changes, and implement data access layer with proper error handling and connection pooling",
-      "testStrategy": "Write unit tests for database operations, test connection handling, and verify data integrity constraints"
+      "details": "Set up Firebase/Firestore as the database solution for the application. Implement data access layer with proper error handling for video processing data storage.",
+      "testStrategy": "Write unit tests for Firestore operations, test connection handling, and verify data integrity",
+      "subtasks": [
+        {
+          "id": 6.1,
+          "title": "Firebase SDK Setup",
+          "description": "Install and configure Firebase SDKs",
+          "status": "completed",
+          "details": "Installed `firebase-admin` and `firebase` SDKs. Created `src/lib/firebaseAdmin.js` for SDK initialization using GOOGLE_APPLICATION_CREDENTIALS."
+        },
+        {
+          "id": 6.2,
+          "title": "Firestore Service Implementation",
+          "description": "Create basic Firestore service functions",
+          "status": "completed",
+          "details": "Created `src/lib/firestoreService.js` with basic functions (`setVideoEntry`, `getVideoEntry`, `updateVideoEntry`) for interacting with the `processed_videos` collection."
+        },
+        {
+          "id": 6.3,
+          "title": "Extend Firestore Service",
+          "description": "Add additional query functions to the Firestore service",
+          "status": "done",
+          "details": "Implement functions for listing videos, filtering by status, and handling batch operations if needed."
+        },
+        {
+          "id": 6.4,
+          "title": "Error Handling and Retry Logic",
+          "description": "Improve error handling for Firestore operations",
+          "status": "done",
+          "details": "Add robust error handling, logging, and retry mechanisms for Firestore operations to handle network issues or service disruptions."
+        },
+        {
+          "id": 6.5,
+          "title": "Unit Tests for Firestore Service",
+          "description": "Create comprehensive tests for Firestore operations",
+          "status": "done",
+          "details": "Write unit tests for all Firestore service functions, including mocking the Firestore client for isolated testing."
+        }
+      ]
     },
     {
       "id": 7,
@@ -147,19 +290,49 @@
       "id": 8,
       "title": "Frontend Scaffolding and Routing",
       "description": "Set up frontend application structure with routing and state management",
-      "status": "pending",
+      "status": "done",
       "dependencies": [
         2
       ],
       "priority": "medium",
       "details": "Initialize frontend framework (React, Vue, etc.), set up routing configuration, implement basic layout components, and configure state management solution (Redux, Context API, etc.)",
-      "testStrategy": "Verify routes work correctly, test navigation between pages, and ensure state management is properly configured"
+      "testStrategy": "Verify routes work correctly, test navigation between pages, and ensure state management is properly configured",
+      "subtasks": [
+        {
+          "id": 8.1,
+          "title": "Initial Frontend Scaffolding",
+          "description": "Create basic directory structure and initial components",
+          "status": "done",
+          "details": "Created standard directories: src/pages, src/components, public. Created basic src/pages/index.js (HomePage component), src/pages/_app.js (MyApp component), and src/pages/_document.js (Document component). Fixed build error by setting \"type\": \"module\" in package.json. Verified basic app runs correctly using `npm run dev`."
+        },
+        {
+          "id": 8.2,
+          "title": "Implement Routing Configuration",
+          "description": "Set up routing for different pages of the application",
+          "status": "done",
+          "details": "Building on the existing pages structure, implement routing between different pages. Create additional page components as needed and ensure navigation works correctly."
+        },
+        {
+          "id": 8.3,
+          "title": "Create Layout Components",
+          "description": "Develop reusable layout components for consistent UI",
+          "status": "done",
+          "details": "Create components like Header, Footer, Sidebar, and Layout wrapper to maintain consistent UI across pages. Implement these in the existing component structure."
+        },
+        {
+          "id": 8.4,
+          "title": "Configure State Management",
+          "description": "Set up state management solution for the application",
+          "status": "done",
+          "details": "Choose and implement appropriate state management solution (Redux, Context API, etc.). Configure it to work with the existing application structure."
+        }
+      ]
     },
     {
       "id": 9,
       "title": "User Interface Components Development",
       "description": "Develop reusable UI components according to design specifications",
-      "status": "pending",
+      "status": "in-progress",
       "dependencies": [
         8
       ],
