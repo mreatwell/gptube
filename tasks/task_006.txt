@@ -1,0 +1,43 @@
+# Task ID: 6
+# Title: Database Integration
+# Status: done
+# Dependencies: 3
+# Priority: high
+# Description: Implement database connection and ORM/query layer
+# Details:
+Set up Firebase/Firestore as the database solution for the application. Implement data access layer with proper error handling for video processing data storage.
+
+# Test Strategy:
+Write unit tests for Firestore operations, test connection handling, and verify data integrity
+
+# Subtasks:
+## 6.1. Firebase SDK Setup [completed]
+### Dependencies: None
+### Description: Install and configure Firebase SDKs
+### Details:
+Installed `firebase-admin` and `firebase` SDKs. Created `src/lib/firebaseAdmin.js` for SDK initialization using GOOGLE_APPLICATION_CREDENTIALS.
+
+## 6.2. Firestore Service Implementation [completed]
+### Dependencies: None
+### Description: Create basic Firestore service functions
+### Details:
+Created `src/lib/firestoreService.js` with basic functions (`setVideoEntry`, `getVideoEntry`, `updateVideoEntry`) for interacting with the `processed_videos` collection.
+
+## 6.3. Extend Firestore Service [done]
+### Dependencies: None
+### Description: Add additional query functions to the Firestore service
+### Details:
+Implement functions for listing videos, filtering by status, and handling batch operations if needed.
+
+## 6.4. Error Handling and Retry Logic [done]
+### Dependencies: None
+### Description: Improve error handling for Firestore operations
+### Details:
+Add robust error handling, logging, and retry mechanisms for Firestore operations to handle network issues or service disruptions.
+
+## 6.5. Unit Tests for Firestore Service [done]
+### Dependencies: None
+### Description: Create comprehensive tests for Firestore operations
+### Details:
+Write unit tests for all Firestore service functions, including mocking the Firestore client for isolated testing.
+

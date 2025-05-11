@@ -1,0 +1,200 @@
+# Task ID: 20
+# Title: Implement Extracted Steps/Tasks Feature with UI Components
+# Status: pending
+# Dependencies: None
+# Priority: medium
+# Description: Develop a feature that extracts structured, actionable steps from video content and displays them in an accessible, mobile-friendly format with copy functionality.
+# Details:
+Create a comprehensive UI component for displaying extracted steps/tasks from videos:
+
+1. Add an "Extract all steps" button:
+   - Position prominently in the video interface
+   - Use either primary or secondary styling based on design system
+   - Ensure proper hover/focus states
+   - Include appropriate icon (e.g., checklist or extract icon)
+
+2. Implement loading state:
+   - Show spinner or progress indicator while extraction is processing
+   - Add appropriate aria attributes for accessibility
+   - Prevent multiple extraction requests
+
+3. Display extracted steps:
+   - Create a structured, hierarchical list format
+   - Apply consistent styling with proper spacing and typography
+   - Ensure each step is clearly delineated
+   - Make text selectable by default
+   - Support markdown or rich text formatting if present in steps
+
+4. Add "Show more" functionality:
+   - Initially show a reasonable number of steps (5-7)
+   - Implement expand/collapse toggle if content exceeds this limit
+   - Ensure smooth transition/animation when expanding
+
+5. Implement link detection and rendering:
+   - Auto-detect URLs in step text
+   - Convert them to clickable links
+   - Ensure proper styling for links (underline, color)
+   - Handle external links appropriately (new tab, security attributes)
+
+6. Add copy functionality:
+   - Create a "Copy to clipboard" button for the entire steps list
+   - Add visual feedback when copied
+   - Implement individual step copying on hover/interaction
+
+Ensure all components are responsive, with special attention to mobile layouts. Use semantic HTML for accessibility and implement proper keyboard navigation. Optimize rendering performance, especially for large sets of steps.
+
+# Test Strategy:
+Testing should cover functionality, accessibility, and performance:
+
+1. Functional Testing:
+   - Verify "Extract all steps" button triggers extraction process
+   - Confirm loading indicator appears during extraction and disappears after completion
+   - Test that steps are displayed correctly with proper formatting
+   - Verify "Show more" button appears only when needed and expands/collapses content
+   - Check that URLs are correctly detected and converted to clickable links
+   - Test copy functionality copies correct content to clipboard
+   - Verify all interactions work on both desktop and mobile devices
+
+2. Accessibility Testing:
+   - Test keyboard navigation through all interactive elements
+   - Verify proper focus states on all interactive elements
+   - Check screen reader compatibility using NVDA and VoiceOver
+   - Ensure proper ARIA attributes on dynamic content
+   - Verify color contrast meets WCAG AA standards
+
+3. Performance Testing:
+   - Measure render time for different quantities of steps (10, 50, 100+)
+   - Test on low-end mobile devices to ensure smooth performance
+   - Verify no layout shifts occur during loading or expansion
+   - Check memory usage when displaying large sets of steps
+
+4. Edge Cases:
+   - Test with empty results (no steps extracted)
+   - Test with extremely long step text
+   - Test with special characters and emoji in step content
+   - Verify behavior when network is slow or disconnected
+
+# Subtasks:
+## 1. Implement 'Extract all steps' button with loading state [pending]
+### Dependencies: None
+### Description: Create a responsive button component that triggers the step extraction process and displays a loading state while processing.
+### Details:
+Implementation steps:
+1. Create a reusable button component with primary/secondary styling options
+2. Add appropriate icon (checklist or extract icon) with proper alignment
+3. Implement hover/focus states according to design system
+4. Add loading state with spinner/progress indicator
+5. Include proper ARIA attributes (aria-busy, aria-live) for accessibility
+6. Implement state management to prevent multiple extraction requests
+7. Position the button prominently in the video interface
+8. Ensure the button is responsive across all device sizes
+
+Testing approach:
+- Unit test button states (default, hover, focus, loading)
+- Test that button is disabled during loading state
+- Verify ARIA attributes are correctly applied
+- Test responsive behavior across breakpoints
+
+## 2. Create structured steps display component [pending]
+### Dependencies: 20.1
+### Description: Develop a component to render extracted steps in a hierarchical, well-formatted list with proper styling and accessibility.
+### Details:
+Implementation steps:
+1. Create a container component for the steps list with proper semantic HTML (ol/ul)
+2. Implement styling for step items with consistent spacing and typography
+3. Add clear visual delineation between steps
+4. Ensure text is selectable by default
+5. Support markdown or rich text formatting if present in steps
+6. Apply proper heading hierarchy for accessibility
+7. Implement responsive layouts for different screen sizes
+8. Add appropriate ARIA roles and attributes
+
+Testing approach:
+- Unit test rendering of steps with various content types
+- Test accessibility using screen readers
+- Verify text selection works as expected
+- Test responsive behavior on different screen sizes
+- Verify markdown/rich text rendering
+
+## 3. Implement 'Show more' functionality [pending]
+### Dependencies: 20.2
+### Description: Add the ability to expand/collapse the steps list when it exceeds a certain number of items, with smooth animations.
+### Details:
+Implementation steps:
+1. Modify the steps display component to initially show a limited number (5-7) of steps
+2. Create an expand/collapse toggle button with appropriate styling
+3. Implement state management for expanded/collapsed state
+4. Add smooth CSS transitions/animations for expanding/collapsing
+5. Ensure proper keyboard accessibility for the toggle
+6. Update ARIA attributes to reflect expanded/collapsed state
+7. Optimize rendering performance for large sets of steps
+
+Testing approach:
+- Test toggle functionality with various numbers of steps
+- Verify animation smoothness
+- Test keyboard navigation and accessibility
+- Verify performance with large datasets
+- Test across different browsers and devices
+
+## 4. Add URL detection and link rendering [pending]
+### Dependencies: 20.2
+### Description: Implement functionality to detect URLs within step text and render them as properly styled, clickable links.
+### Details:
+Implementation steps:
+1. Create a utility function to detect URLs in text using regex
+2. Implement a component to render detected URLs as clickable links
+3. Apply proper styling for links (underline, color) according to design system
+4. Add appropriate attributes for external links (target="_blank", rel="noopener noreferrer")
+5. Ensure links are keyboard accessible
+6. Handle edge cases (malformed URLs, URLs within markdown)
+7. Test performance impact on rendering
+
+Testing approach:
+- Unit test URL detection with various URL formats
+- Verify links open correctly
+- Test keyboard accessibility
+- Verify security attributes are correctly applied
+- Test with different browsers
+
+## 5. Implement copy functionality for steps [pending]
+### Dependencies: 20.2
+### Description: Add the ability to copy individual steps or the entire list of steps to the clipboard with visual feedback.
+### Details:
+Implementation steps:
+1. Create a "Copy to clipboard" button for the entire steps list
+2. Add individual copy buttons/icons that appear on hover for each step
+3. Implement clipboard API integration for copying text
+4. Add visual feedback when content is copied (toast notification or button state change)
+5. Handle copy failures gracefully
+6. Ensure proper keyboard accessibility for copy functions
+7. Format copied text appropriately (maintain numbering, formatting)
+
+Testing approach:
+- Test copying entire list and individual steps
+- Verify visual feedback works correctly
+- Test keyboard accessibility
+- Test across different browsers (clipboard API support varies)
+- Verify copied text formatting is correct
+
+## 6. Optimize for performance and accessibility [pending]
+### Dependencies: 20.1, 20.2, 20.3, 20.4, 20.5
+### Description: Perform final optimizations to ensure the feature is performant, fully accessible, and works well across all devices.
+### Details:
+Implementation steps:
+1. Implement virtualized rendering for large lists of steps
+2. Add comprehensive keyboard navigation throughout the component
+3. Ensure all interactive elements have appropriate focus states
+4. Verify and enhance screen reader compatibility
+5. Optimize mobile layouts with touch-friendly targets
+6. Add appropriate color contrast for accessibility
+7. Implement performance monitoring and optimize render cycles
+8. Add comprehensive error handling for all user interactions
+
+Testing approach:
+- Run accessibility audit (WCAG compliance)
+- Test with screen readers on multiple platforms
+- Measure and benchmark performance metrics
+- Test on low-end devices to verify performance
+- Conduct cross-browser and cross-device testing
+- Verify keyboard-only navigation works end-to-end
+

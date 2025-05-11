@@ -1,0 +1,149 @@
+# Task ID: 18
+# Title: Implement Video Metadata & Description Component
+# Status: pending
+# Dependencies: None
+# Priority: medium
+# Description: Create a responsive component that displays video metadata (title, thumbnail, channel info) and a collapsible description with clickable links for the GPTube MVP.
+# Details:
+Build a component that displays comprehensive video metadata with the following elements:
+
+1. Video title: Implement with proper heading hierarchy (h1 or h2), truncate with ellipsis if too long, ensure proper font scaling for different screen sizes.
+
+2. Video thumbnail: Display responsive image with appropriate aspect ratio (16:9), implement lazy loading, add placeholder for loading state, ensure alt text for accessibility.
+
+3. Channel information: Show channel name and avatar side by side, make channel name clickable if linking is supported, use fallback avatar if none available, maintain consistent sizing across different devices.
+
+4. Collapsible description: Implement with aria-expanded attribute, show only first 2-3 lines when collapsed, add "Show more"/"Show less" toggle button, ensure smooth transition animation.
+
+5. Link parsing: Auto-detect URLs in description text and convert to clickable links, handle various URL formats (http, https, www prefixes), ensure external links open in new tab with proper security attributes.
+
+6. Styling considerations: Use responsive typography (rem units), ensure sufficient contrast ratios for accessibility, implement proper spacing between elements, optimize for touch targets on mobile (min 44×44px), use CSS Grid or Flexbox for layout.
+
+Ensure the component works offline if the rest of the application supports it, and optimize rendering performance by avoiding unnecessary re-renders.
+
+# Test Strategy:
+Testing should cover functionality, responsiveness, and accessibility:
+
+1. Unit tests:
+   - Verify title displays correctly and truncates when necessary
+   - Test thumbnail loading and fallback behavior
+   - Verify channel info displays correctly with and without avatar
+   - Test description collapse/expand functionality
+   - Verify URL detection and link creation in description
+
+2. Responsive testing:
+   - Test on multiple viewport sizes (320px, 768px, 1024px, 1440px)
+   - Verify text remains readable at all sizes
+   - Ensure touch targets are appropriately sized on mobile
+   - Test that layout adjusts appropriately between breakpoints
+
+3. Accessibility testing:
+   - Verify proper heading structure
+   - Test keyboard navigation for expand/collapse functionality
+   - Ensure sufficient color contrast (WCAG AA compliance)
+   - Verify screen reader compatibility using NVDA or VoiceOver
+   - Test focus states for interactive elements
+
+4. Performance testing:
+   - Measure and verify component render time is under 100ms
+   - Test with slow network conditions to verify lazy loading
+   - Verify memory usage remains stable during collapse/expand operations
+
+Create visual regression tests to catch unexpected UI changes during future development.
+
+# Subtasks:
+## 1. Create responsive video title component [pending]
+### Dependencies: None
+### Description: Implement a responsive component for displaying the video title with proper heading hierarchy, truncation, and font scaling.
+### Details:
+Implementation steps:
+1. Create a new React component called VideoTitle
+2. Use appropriate heading tag (h1 or h2) based on page hierarchy
+3. Implement text truncation with CSS (text-overflow: ellipsis) for long titles
+4. Use responsive typography with rem units for font sizing
+5. Add proper ARIA attributes for accessibility
+6. Implement media queries to adjust font size on different screen sizes
+7. Add unit tests to verify truncation behavior and responsive design
+8. Test across different viewport sizes to ensure proper scaling
+
+## 2. Implement responsive video thumbnail display [pending]
+### Dependencies: None
+### Description: Create a component to display the video thumbnail with proper aspect ratio, lazy loading, and accessibility features.
+### Details:
+Implementation steps:
+1. Create a VideoThumbnail component
+2. Maintain 16:9 aspect ratio using CSS (aspect-ratio or padding-top technique)
+3. Implement lazy loading with loading="lazy" attribute
+4. Create a placeholder/skeleton UI for loading state
+5. Ensure proper alt text is passed and used for accessibility
+6. Handle error states if thumbnail fails to load
+7. Optimize image delivery using srcset for responsive images
+8. Test thumbnail rendering at various screen sizes
+9. Verify lazy loading behavior works as expected
+10. Test with screen readers to confirm accessibility
+
+## 3. Build channel information display [pending]
+### Dependencies: None
+### Description: Implement the channel information section showing channel name and avatar with consistent sizing and fallback options.
+### Details:
+Implementation steps:
+1. Create a ChannelInfo component
+2. Design layout with channel avatar and name side by side using Flexbox
+3. Implement circular avatar with consistent sizing across devices
+4. Create a fallback avatar (initials or icon) if no image is available
+5. Make channel name clickable if linking is supported
+6. Ensure touch targets are at least 44×44px for mobile usability
+7. Add hover/focus states for interactive elements
+8. Test with various channel name lengths to ensure proper wrapping
+9. Verify fallback avatar appears correctly when image is missing
+10. Test responsive behavior on different screen sizes
+
+## 4. Develop collapsible description component [pending]
+### Dependencies: 18.1
+### Description: Create a collapsible description component with expand/collapse functionality and smooth transitions.
+### Details:
+Implementation steps:
+1. Create a CollapsibleDescription component
+2. Implement state management for expanded/collapsed states
+3. Show only first 2-3 lines when collapsed using line-clamp or max-height
+4. Add "Show more"/"Show less" toggle button with appropriate styling
+5. Implement smooth CSS transition for expanding/collapsing
+6. Use aria-expanded attribute for accessibility
+7. Ensure keyboard navigation works for the toggle button
+8. Add unit tests for toggle functionality
+9. Test with various description lengths
+10. Verify animation performance on lower-end devices
+
+## 5. Implement URL parsing and clickable links [pending]
+### Dependencies: 18.4
+### Description: Add functionality to detect URLs in description text and convert them to clickable links with proper security attributes.
+### Details:
+Implementation steps:
+1. Create a utility function to detect URLs in text
+2. Support various URL formats (http, https, www prefixes)
+3. Convert detected URLs to anchor tags
+4. Ensure links open in new tabs with target="_blank"
+5. Add rel="noopener noreferrer" for security
+6. Preserve non-URL text formatting
+7. Style links appropriately with hover/focus states
+8. Write unit tests for URL detection with various formats
+9. Test with real-world description examples
+10. Verify links open correctly and securely in new tabs
+
+## 6. Assemble and optimize complete video metadata component [pending]
+### Dependencies: 18.1, 18.2, 18.3, 18.4, 18.5
+### Description: Integrate all subcomponents into a cohesive VideoMetadata component with performance optimizations and responsive layout.
+### Details:
+Implementation steps:
+1. Create the main VideoMetadata component
+2. Integrate all previously built subcomponents
+3. Implement responsive layout using CSS Grid or Flexbox
+4. Ensure proper spacing between elements using CSS custom properties
+5. Optimize rendering performance with React.memo or useMemo where appropriate
+6. Implement proper color contrast for accessibility (WCAG AA compliance)
+7. Add comprehensive prop validation with PropTypes or TypeScript
+8. Create Storybook stories for various states and screen sizes
+9. Implement end-to-end tests for the complete component
+10. Perform performance testing to identify and fix any bottlenecks
+11. Test offline functionality if the application supports it
+
