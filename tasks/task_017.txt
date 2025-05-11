@@ -1,0 +1,188 @@
+# Task ID: 17
+# Title: Implement Responsive YouTube URL Input Section with Validation
+# Status: pending
+# Dependencies: None
+# Priority: medium
+# Description: Create a user-friendly landing section with a YouTube URL input field, submit functionality, loading states, and error handling for the gptube MVP.
+# Details:
+Develop a responsive input section that serves as the primary entry point for the application. The implementation should include:
+
+1. A prominent input field that:
+   - Is optimized for both desktop and mobile views (mobile-first approach)
+   - Has clear placeholder text (e.g., 'Paste YouTube URL here')
+   - Automatically receives focus when the page loads
+   - Has appropriate input type and validation attributes
+   - Maintains proper contrast ratios for accessibility
+
+2. A visually distinct submit button that:
+   - Uses the application's primary color scheme
+   - Has appropriate hover/focus states
+   - Contains clear action text (e.g., 'Analyze' or 'Summarize')
+   - Is properly sized for touch targets on mobile
+
+3. Form submission handling that:
+   - Processes the form when Enter key is pressed
+   - Shows a non-blocking loading indicator during API calls
+   - Clears previous results when a new submission begins
+   - Prevents multiple submissions while processing
+
+4. Error handling that:
+   - Validates input for YouTube URL format
+   - Displays user-friendly error messages
+   - Handles API errors gracefully
+   - Provides recovery suggestions when appropriate
+
+Ensure all elements have proper ARIA attributes for screen readers and keyboard navigation. The component should be built with performance in mind, avoiding unnecessary re-renders.
+
+# Test Strategy:
+Testing should verify functionality, accessibility, and responsiveness:
+
+1. Functional Testing:
+   - Verify the input field receives autofocus on page load
+   - Test form submission via both button click and Enter key press
+   - Confirm loading indicator appears during processing and disappears after completion
+   - Validate that previous results are cleared on new submission
+   - Test URL validation with various inputs: valid YouTube URLs, invalid URLs, empty input
+   - Verify error messages display correctly for different error scenarios
+   - Confirm multiple rapid submissions are handled properly
+
+2. Accessibility Testing:
+   - Run automated tests with tools like Axe or Lighthouse
+   - Verify keyboard navigation works correctly (tab order, focus states)
+   - Test with screen readers to ensure all elements are properly announced
+   - Check color contrast meets WCAG AA standards
+   - Verify error messages are associated with the input field for screen readers
+
+3. Responsive Testing:
+   - Test on multiple device sizes (mobile, tablet, desktop)
+   - Verify the input field and button are appropriately sized on touch devices
+   - Check that the layout adjusts properly at different breakpoints
+   - Test on both iOS and Android mobile browsers
+
+4. Performance Testing:
+   - Measure and verify minimal component render time
+   - Check for any layout shifts during loading states
+   - Verify smooth transitions between states
+
+# Subtasks:
+## 1. Create responsive input field with proper attributes and styling [pending]
+### Dependencies: None
+### Description: Implement a mobile-first responsive input field for YouTube URLs with appropriate attributes, styling, and accessibility features
+### Details:
+Implementation details:
+1. Create an input element with type='url' and appropriate validation attributes (required, pattern for YouTube URLs)
+2. Add clear placeholder text ('Paste YouTube URL here')
+3. Implement autofocus attribute for desktop and programmatic focus for mobile
+4. Style the input field responsively using CSS (consider using CSS Grid or Flexbox)
+5. Ensure proper contrast ratios (at least 4.5:1) for text and background
+6. Add ARIA attributes (aria-label, aria-required)
+7. Implement proper sizing for mobile touch targets (minimum 44x44px)
+8. Add appropriate :focus, :hover, and :active states
+
+Testing approach:
+- Test on multiple screen sizes (mobile, tablet, desktop)
+- Verify focus behavior on page load
+- Validate accessibility using automated tools (Lighthouse, axe)
+- Test keyboard navigation
+
+## 2. Design and implement submit button with proper states [pending]
+### Dependencies: 17.1
+### Description: Create a visually distinct, accessible submit button with appropriate states and styling
+### Details:
+Implementation details:
+1. Create a button element with type='submit' and clear action text ('Analyze' or 'Summarize')
+2. Style the button using the application's primary color scheme
+3. Implement hover, focus, and active states with visual feedback
+4. Ensure proper sizing for touch targets (minimum 44x44px)
+5. Add appropriate ARIA attributes (aria-label if needed)
+6. Position the button appropriately relative to the input field (responsive layout)
+7. Implement disabled state styling for when submission is in progress
+
+Testing approach:
+- Test visual appearance across different screen sizes
+- Verify all states (hover, focus, active, disabled)
+- Test touch target size on mobile devices
+- Validate accessibility using automated tools
+- Test keyboard navigation and activation
+
+## 3. Implement YouTube URL validation logic [pending]
+### Dependencies: 17.1, 17.2
+### Description: Create validation functions to check for valid YouTube URL formats and provide user feedback
+### Details:
+Implementation details:
+1. Create a utility function to validate YouTube URL formats (supporting various formats: standard, shortened, embedded, etc.)
+2. Implement real-time validation as user types or pastes URL
+3. Add visual indicators for valid/invalid states
+4. Create user-friendly error messages for invalid URLs
+5. Implement validation on form submission
+6. Add appropriate ARIA attributes to communicate validation errors (aria-invalid, aria-describedby)
+7. Ensure error messages are accessible to screen readers
+
+Testing approach:
+- Test with various YouTube URL formats (standard, shortened, playlist, timestamp, etc.)
+- Test with invalid URLs
+- Verify error messages are clear and helpful
+- Test accessibility of error states with screen readers
+- Test validation timing (on input, on blur, on submit)
+
+## 4. Create form submission handler with loading states [pending]
+### Dependencies: 17.1, 17.2, 17.3
+### Description: Implement form submission logic with loading indicators and prevention of multiple submissions
+### Details:
+Implementation details:
+1. Create a form element wrapping the input and button
+2. Implement onSubmit handler to process form submission
+3. Add event listener for Enter key press to trigger submission
+4. Create loading state management (using state variable)
+5. Implement a non-blocking loading indicator (spinner, progress bar, etc.)
+6. Disable the submit button and input field during loading
+7. Clear previous results when a new submission begins
+8. Prevent multiple submissions while processing
+
+Testing approach:
+- Test form submission via button click and Enter key
+- Verify loading indicator appears during processing
+- Test that multiple submissions are prevented
+- Verify previous results are cleared on new submission
+- Test keyboard accessibility during form submission
+
+## 5. Implement API error handling and user feedback [pending]
+### Dependencies: 17.4
+### Description: Create robust error handling for API calls with user-friendly error messages and recovery suggestions
+### Details:
+Implementation details:
+1. Implement try/catch blocks around API calls
+2. Create error state management (using state variable)
+3. Design and implement error message component with appropriate styling
+4. Create specific error messages for different error types (network error, invalid video, etc.)
+5. Add recovery suggestions based on error type (e.g., "Check your internet connection")
+6. Ensure error messages are accessible (proper ARIA attributes, color contrast)
+7. Implement retry functionality where appropriate
+
+Testing approach:
+- Test various error scenarios (network failure, invalid response, etc.)
+- Verify error messages are clear and helpful
+- Test recovery suggestions
+- Validate accessibility of error states
+- Test retry functionality if implemented
+
+## 6. Optimize component performance and implement final testing [pending]
+### Dependencies: 17.1, 17.2, 17.3, 17.4, 17.5
+### Description: Optimize the component to avoid unnecessary re-renders and conduct comprehensive testing across devices
+### Details:
+Implementation details:
+1. Review component for potential performance optimizations
+2. Implement React.memo or useMemo where appropriate to prevent unnecessary re-renders
+3. Optimize event handlers (debounce URL validation if needed)
+4. Ensure proper cleanup of event listeners and timers
+5. Implement final responsive adjustments for edge cases
+6. Add comprehensive unit tests for all functionality
+7. Conduct end-to-end testing of the complete user flow
+
+Testing approach:
+- Perform performance testing (React DevTools Profiler)
+- Test on low-end devices to ensure responsiveness
+- Conduct comprehensive cross-browser testing
+- Perform full accessibility audit (keyboard, screen reader, etc.)
+- Test complete user flows from URL input to result display
+

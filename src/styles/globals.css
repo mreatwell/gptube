@@ -1,0 +1,87 @@
+/* Pastel/neutral color palette */
+:root {
+  --color-bg: #f8f7f4; /* Cream */
+  --color-surface: #f3eafd; /* Lilac (light) */
+  --color-primary: #b39ddb; /* Lilac */
+  --color-accent: #d1e7dd; /* Soft green */
+  --color-heading: #234236; /* Dark green */
+  --color-text: #2d2d2d; /* Neutral dark */
+  --color-muted: #7d7d7d; /* Muted neutral */
+  --color-border: #e0e0e0; /* Light border */
+  --color-button: #6d9886; /* Muted green */
+  --color-button-text: #fff;
+  --color-card: #fffefb; /* Off-white/cream */
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: "Inter", "Nunito", system-ui, sans-serif;
+  font-size: 18px;
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: var(--color-heading);
+  font-family: inherit;
+  font-weight: 700;
+  margin-top: 0;
+}
+
+button,
+.button {
+  background: var(--color-primary);
+  color: var(--color-button-text);
+  border: none;
+  border-radius: 8px;
+  padding: 10px 22px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(179, 157, 219, 0.08);
+  transition:
+    background 0.2s,
+    box-shadow 0.2s;
+}
+button:hover,
+.button:hover {
+  background: var(--color-button);
+  box-shadow: 0 4px 16px rgba(35, 66, 54, 0.1);
+}
+
+.card {
+  background: var(--color-card);
+  border-radius: 14px;
+  box-shadow: 0 2px 12px rgba(35, 66, 54, 0.04);
+  padding: 24px;
+  margin: 16px 0;
+  border: 1px solid var(--color-border);
+}
+
+input,
+textarea,
+select {
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 1rem;
+  background: #fff;
+  color: var(--color-text);
+  margin-bottom: 8px;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  background: var(--color-surface);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-primary);
+  border-radius: 8px;
+}

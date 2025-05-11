@@ -448,6 +448,450 @@
       "priority": "low",
       "details": "Document API endpoints, create user guides, document architecture decisions, create troubleshooting guides, and conduct knowledge transfer sessions with stakeholders",
       "testStrategy": "Review documentation with team members for accuracy and completeness, verify documentation is accessible to all stakeholders"
+    },
+    {
+      "id": 16,
+      "title": "Implement Transcript & AI Features Section",
+      "description": "Develop the transcript and AI features section of the gptube MVP, including a scrollable transcript area with toggle functionality and a prominently displayed summary with copy functionality.",
+      "details": "Create a responsive and accessible section for displaying the video transcript and AI-generated summary with the following components:\n\n1. Transcript Display:\n   - Implement a scrollable container for the transcript text with appropriate height constraints\n   - Apply styling for optimal readability (font size, line height, spacing, background color)\n   - Ensure the transcript text is selectable and copyable by users\n   - Add a show/hide toggle button with appropriate icon and label\n   - Implement smooth animation for collapsing/expanding the transcript\n   - Handle empty or missing transcript gracefully with appropriate messaging\n\n2. Summary Display:\n   - Create a visually distinct card or highlight box for the AI-generated summary\n   - Apply styling to make the summary stand out from the transcript (borders, background, etc.)\n   - Ensure the summary is properly formatted with paragraphs preserved\n   - Implement responsive design for the summary box (adapts to mobile screens)\n\n3. Copy Functionality:\n   - Add a copy-to-clipboard button for the summary with appropriate icon\n   - Implement the copy functionality using the Clipboard API\n   - Provide visual feedback when copy is successful (button state change, toast notification)\n   - Handle copy failures gracefully with error messaging\n\nEnsure all elements follow accessibility best practices including proper contrast, focus states, and ARIA attributes. The design should be mobile-first, with appropriate styling for different screen sizes.",
+      "testStrategy": "Testing should verify both functionality and user experience across devices:\n\n1. Functional Testing:\n   - Verify transcript displays correctly with proper formatting\n   - Test show/hide toggle functionality works as expected\n   - Confirm transcript text is selectable and copyable\n   - Verify summary displays correctly in its highlight box\n   - Test copy-to-clipboard functionality for the summary\n   - Verify copy success feedback is displayed\n   - Test error handling for copy failures\n   - Verify graceful handling of missing/empty transcript\n\n2. Responsive Testing:\n   - Test on multiple screen sizes (mobile, tablet, desktop)\n   - Verify text remains readable on small screens\n   - Confirm scroll behavior works properly on all devices\n   - Verify toggle and copy buttons are easily tappable on mobile\n\n3. Accessibility Testing:\n   - Verify all interactive elements are keyboard accessible\n   - Test with screen readers to ensure proper ARIA attributes\n   - Check color contrast meets WCAG standards\n   - Verify focus states are visible for all interactive elements\n\n4. Performance Testing:\n   - Measure and optimize render time for large transcripts\n   - Test scrolling performance with lengthy transcripts\n   - Verify copy functionality works efficiently with large text",
+      "status": "pending",
+      "dependencies": [],
+      "priority": "medium",
+      "subtasks": [
+        {
+          "id": 1,
+          "title": "Create basic transcript container structure",
+          "description": "Implement the foundational HTML and CSS for the transcript section with proper layout and styling",
+          "dependencies": [],
+          "details": "Implementation details:\n1. Create a container div with appropriate class names for the transcript section\n2. Add a header with title and toggle button placeholder\n3. Implement a scrollable div for transcript content with height constraints\n4. Style the container with appropriate fonts, colors, and spacing for readability\n5. Add responsive styling using media queries for different screen sizes\n6. Implement empty state handling with a placeholder message\n7. Test the container layout across different viewport sizes\n8. Ensure proper semantic HTML structure for accessibility",
+          "status": "pending",
+          "parentTaskId": 16
+        },
+        {
+          "id": 2,
+          "title": "Implement transcript toggle functionality",
+          "description": "Add the ability to show/hide the transcript with smooth animations and appropriate button states",
+          "dependencies": [
+            1
+          ],
+          "details": "Implementation details:\n1. Create a toggle button with appropriate icon and label\n2. Implement JavaScript event listeners for the toggle button\n3. Add CSS transitions for smooth expand/collapse animations\n4. Update button icon and label based on current state (expanded/collapsed)\n5. Store user preference for transcript visibility in local storage\n6. Ensure keyboard accessibility for the toggle button\n7. Test toggle functionality across browsers\n8. Add appropriate ARIA attributes for accessibility",
+          "status": "pending",
+          "parentTaskId": 16
+        },
+        {
+          "id": 3,
+          "title": "Create AI summary display component",
+          "description": "Develop a visually distinct component to display the AI-generated summary with proper styling",
+          "dependencies": [
+            1
+          ],
+          "details": "Implementation details:\n1. Create a card/box component with visually distinct styling\n2. Implement proper padding, borders, and background colors\n3. Add a clear heading indicating it's an AI summary\n4. Style the summary text with appropriate font size and line height\n5. Preserve paragraph formatting in the summary display\n6. Ensure the component is responsive and adapts to different screen sizes\n7. Add placeholder for the copy button\n8. Test the component with different lengths of summary text",
+          "status": "pending",
+          "parentTaskId": 16
+        },
+        {
+          "id": 4,
+          "title": "Implement copy-to-clipboard functionality",
+          "description": "Add the ability to copy the AI summary to clipboard with appropriate feedback",
+          "dependencies": [
+            3
+          ],
+          "details": "Implementation details:\n1. Create a copy button with appropriate icon\n2. Implement the Clipboard API functionality to copy summary text\n3. Add visual feedback for successful copy (button state change)\n4. Create a toast notification system for copy success feedback\n5. Implement error handling for clipboard failures\n6. Add appropriate hover and focus states for the copy button\n7. Test copy functionality across different browsers\n8. Ensure keyboard accessibility for the copy button",
+          "status": "pending",
+          "parentTaskId": 16
+        },
+        {
+          "id": 5,
+          "title": "Enhance accessibility features",
+          "description": "Ensure the entire transcript and summary section meets accessibility standards",
+          "dependencies": [
+            1,
+            2,
+            3,
+            4
+          ],
+          "details": "Implementation details:\n1. Add appropriate ARIA labels and roles to all interactive elements\n2. Ensure proper focus management throughout the component\n3. Verify color contrast meets WCAG standards\n4. Test keyboard navigation through all interactive elements\n5. Add screen reader announcements for dynamic content changes\n6. Implement proper heading hierarchy\n7. Test with screen readers (NVDA, VoiceOver)\n8. Add skip links if necessary for better navigation",
+          "status": "pending",
+          "parentTaskId": 16
+        },
+        {
+          "id": 6,
+          "title": "Integrate with data sources and finalize responsive behavior",
+          "description": "Connect the UI components to actual transcript and summary data sources and ensure perfect responsive behavior",
+          "dependencies": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "details": "Implementation details:\n1. Create functions to fetch transcript and summary data from API/state\n2. Implement loading states while data is being fetched\n3. Handle error states gracefully with user-friendly messages\n4. Connect toggle state to actual transcript visibility\n5. Perform final responsive testing across mobile, tablet, and desktop views\n6. Optimize performance for large transcript texts\n7. Implement final polish on animations and transitions\n8. Conduct end-to-end testing of the complete feature",
+          "status": "pending",
+          "parentTaskId": 16
+        }
+      ]
+    },
+    {
+      "id": 17,
+      "title": "Implement Responsive YouTube URL Input Section with Validation",
+      "description": "Create a user-friendly landing section with a YouTube URL input field, submit functionality, loading states, and error handling for the gptube MVP.",
+      "details": "Develop a responsive input section that serves as the primary entry point for the application. The implementation should include:\n\n1. A prominent input field that:\n   - Is optimized for both desktop and mobile views (mobile-first approach)\n   - Has clear placeholder text (e.g., 'Paste YouTube URL here')\n   - Automatically receives focus when the page loads\n   - Has appropriate input type and validation attributes\n   - Maintains proper contrast ratios for accessibility\n\n2. A visually distinct submit button that:\n   - Uses the application's primary color scheme\n   - Has appropriate hover/focus states\n   - Contains clear action text (e.g., 'Analyze' or 'Summarize')\n   - Is properly sized for touch targets on mobile\n\n3. Form submission handling that:\n   - Processes the form when Enter key is pressed\n   - Shows a non-blocking loading indicator during API calls\n   - Clears previous results when a new submission begins\n   - Prevents multiple submissions while processing\n\n4. Error handling that:\n   - Validates input for YouTube URL format\n   - Displays user-friendly error messages\n   - Handles API errors gracefully\n   - Provides recovery suggestions when appropriate\n\nEnsure all elements have proper ARIA attributes for screen readers and keyboard navigation. The component should be built with performance in mind, avoiding unnecessary re-renders.",
+      "testStrategy": "Testing should verify functionality, accessibility, and responsiveness:\n\n1. Functional Testing:\n   - Verify the input field receives autofocus on page load\n   - Test form submission via both button click and Enter key press\n   - Confirm loading indicator appears during processing and disappears after completion\n   - Validate that previous results are cleared on new submission\n   - Test URL validation with various inputs: valid YouTube URLs, invalid URLs, empty input\n   - Verify error messages display correctly for different error scenarios\n   - Confirm multiple rapid submissions are handled properly\n\n2. Accessibility Testing:\n   - Run automated tests with tools like Axe or Lighthouse\n   - Verify keyboard navigation works correctly (tab order, focus states)\n   - Test with screen readers to ensure all elements are properly announced\n   - Check color contrast meets WCAG AA standards\n   - Verify error messages are associated with the input field for screen readers\n\n3. Responsive Testing:\n   - Test on multiple device sizes (mobile, tablet, desktop)\n   - Verify the input field and button are appropriately sized on touch devices\n   - Check that the layout adjusts properly at different breakpoints\n   - Test on both iOS and Android mobile browsers\n\n4. Performance Testing:\n   - Measure and verify minimal component render time\n   - Check for any layout shifts during loading states\n   - Verify smooth transitions between states",
+      "status": "pending",
+      "dependencies": [],
+      "priority": "medium",
+      "subtasks": [
+        {
+          "id": 1,
+          "title": "Create responsive input field with proper attributes and styling",
+          "description": "Implement a mobile-first responsive input field for YouTube URLs with appropriate attributes, styling, and accessibility features",
+          "dependencies": [],
+          "details": "Implementation details:\n1. Create an input element with type='url' and appropriate validation attributes (required, pattern for YouTube URLs)\n2. Add clear placeholder text ('Paste YouTube URL here')\n3. Implement autofocus attribute for desktop and programmatic focus for mobile\n4. Style the input field responsively using CSS (consider using CSS Grid or Flexbox)\n5. Ensure proper contrast ratios (at least 4.5:1) for text and background\n6. Add ARIA attributes (aria-label, aria-required)\n7. Implement proper sizing for mobile touch targets (minimum 44x44px)\n8. Add appropriate :focus, :hover, and :active states\n\nTesting approach:\n- Test on multiple screen sizes (mobile, tablet, desktop)\n- Verify focus behavior on page load\n- Validate accessibility using automated tools (Lighthouse, axe)\n- Test keyboard navigation",
+          "status": "pending",
+          "parentTaskId": 17
+        },
+        {
+          "id": 2,
+          "title": "Design and implement submit button with proper states",
+          "description": "Create a visually distinct, accessible submit button with appropriate states and styling",
+          "dependencies": [
+            1
+          ],
+          "details": "Implementation details:\n1. Create a button element with type='submit' and clear action text ('Analyze' or 'Summarize')\n2. Style the button using the application's primary color scheme\n3. Implement hover, focus, and active states with visual feedback\n4. Ensure proper sizing for touch targets (minimum 44x44px)\n5. Add appropriate ARIA attributes (aria-label if needed)\n6. Position the button appropriately relative to the input field (responsive layout)\n7. Implement disabled state styling for when submission is in progress\n\nTesting approach:\n- Test visual appearance across different screen sizes\n- Verify all states (hover, focus, active, disabled)\n- Test touch target size on mobile devices\n- Validate accessibility using automated tools\n- Test keyboard navigation and activation",
+          "status": "pending",
+          "parentTaskId": 17
+        },
+        {
+          "id": 3,
+          "title": "Implement YouTube URL validation logic",
+          "description": "Create validation functions to check for valid YouTube URL formats and provide user feedback",
+          "dependencies": [
+            1,
+            2
+          ],
+          "details": "Implementation details:\n1. Create a utility function to validate YouTube URL formats (supporting various formats: standard, shortened, embedded, etc.)\n2. Implement real-time validation as user types or pastes URL\n3. Add visual indicators for valid/invalid states\n4. Create user-friendly error messages for invalid URLs\n5. Implement validation on form submission\n6. Add appropriate ARIA attributes to communicate validation errors (aria-invalid, aria-describedby)\n7. Ensure error messages are accessible to screen readers\n\nTesting approach:\n- Test with various YouTube URL formats (standard, shortened, playlist, timestamp, etc.)\n- Test with invalid URLs\n- Verify error messages are clear and helpful\n- Test accessibility of error states with screen readers\n- Test validation timing (on input, on blur, on submit)",
+          "status": "pending",
+          "parentTaskId": 17
+        },
+        {
+          "id": 4,
+          "title": "Create form submission handler with loading states",
+          "description": "Implement form submission logic with loading indicators and prevention of multiple submissions",
+          "dependencies": [
+            1,
+            2,
+            3
+          ],
+          "details": "Implementation details:\n1. Create a form element wrapping the input and button\n2. Implement onSubmit handler to process form submission\n3. Add event listener for Enter key press to trigger submission\n4. Create loading state management (using state variable)\n5. Implement a non-blocking loading indicator (spinner, progress bar, etc.)\n6. Disable the submit button and input field during loading\n7. Clear previous results when a new submission begins\n8. Prevent multiple submissions while processing\n\nTesting approach:\n- Test form submission via button click and Enter key\n- Verify loading indicator appears during processing\n- Test that multiple submissions are prevented\n- Verify previous results are cleared on new submission\n- Test keyboard accessibility during form submission",
+          "status": "pending",
+          "parentTaskId": 17
+        },
+        {
+          "id": 5,
+          "title": "Implement API error handling and user feedback",
+          "description": "Create robust error handling for API calls with user-friendly error messages and recovery suggestions",
+          "dependencies": [
+            4
+          ],
+          "details": "Implementation details:\n1. Implement try/catch blocks around API calls\n2. Create error state management (using state variable)\n3. Design and implement error message component with appropriate styling\n4. Create specific error messages for different error types (network error, invalid video, etc.)\n5. Add recovery suggestions based on error type (e.g., \"Check your internet connection\")\n6. Ensure error messages are accessible (proper ARIA attributes, color contrast)\n7. Implement retry functionality where appropriate\n\nTesting approach:\n- Test various error scenarios (network failure, invalid response, etc.)\n- Verify error messages are clear and helpful\n- Test recovery suggestions\n- Validate accessibility of error states\n- Test retry functionality if implemented",
+          "status": "pending",
+          "parentTaskId": 17
+        },
+        {
+          "id": 6,
+          "title": "Optimize component performance and implement final testing",
+          "description": "Optimize the component to avoid unnecessary re-renders and conduct comprehensive testing across devices",
+          "dependencies": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "details": "Implementation details:\n1. Review component for potential performance optimizations\n2. Implement React.memo or useMemo where appropriate to prevent unnecessary re-renders\n3. Optimize event handlers (debounce URL validation if needed)\n4. Ensure proper cleanup of event listeners and timers\n5. Implement final responsive adjustments for edge cases\n6. Add comprehensive unit tests for all functionality\n7. Conduct end-to-end testing of the complete user flow\n\nTesting approach:\n- Perform performance testing (React DevTools Profiler)\n- Test on low-end devices to ensure responsiveness\n- Conduct comprehensive cross-browser testing\n- Perform full accessibility audit (keyboard, screen reader, etc.)\n- Test complete user flows from URL input to result display",
+          "status": "pending",
+          "parentTaskId": 17
+        }
+      ]
+    },
+    {
+      "id": 18,
+      "title": "Implement Video Metadata & Description Component",
+      "description": "Create a responsive component that displays video metadata (title, thumbnail, channel info) and a collapsible description with clickable links for the GPTube MVP.",
+      "details": "Build a component that displays comprehensive video metadata with the following elements:\n\n1. Video title: Implement with proper heading hierarchy (h1 or h2), truncate with ellipsis if too long, ensure proper font scaling for different screen sizes.\n\n2. Video thumbnail: Display responsive image with appropriate aspect ratio (16:9), implement lazy loading, add placeholder for loading state, ensure alt text for accessibility.\n\n3. Channel information: Show channel name and avatar side by side, make channel name clickable if linking is supported, use fallback avatar if none available, maintain consistent sizing across different devices.\n\n4. Collapsible description: Implement with aria-expanded attribute, show only first 2-3 lines when collapsed, add \"Show more\"/\"Show less\" toggle button, ensure smooth transition animation.\n\n5. Link parsing: Auto-detect URLs in description text and convert to clickable links, handle various URL formats (http, https, www prefixes), ensure external links open in new tab with proper security attributes.\n\n6. Styling considerations: Use responsive typography (rem units), ensure sufficient contrast ratios for accessibility, implement proper spacing between elements, optimize for touch targets on mobile (min 44×44px), use CSS Grid or Flexbox for layout.\n\nEnsure the component works offline if the rest of the application supports it, and optimize rendering performance by avoiding unnecessary re-renders.",
+      "testStrategy": "Testing should cover functionality, responsiveness, and accessibility:\n\n1. Unit tests:\n   - Verify title displays correctly and truncates when necessary\n   - Test thumbnail loading and fallback behavior\n   - Verify channel info displays correctly with and without avatar\n   - Test description collapse/expand functionality\n   - Verify URL detection and link creation in description\n\n2. Responsive testing:\n   - Test on multiple viewport sizes (320px, 768px, 1024px, 1440px)\n   - Verify text remains readable at all sizes\n   - Ensure touch targets are appropriately sized on mobile\n   - Test that layout adjusts appropriately between breakpoints\n\n3. Accessibility testing:\n   - Verify proper heading structure\n   - Test keyboard navigation for expand/collapse functionality\n   - Ensure sufficient color contrast (WCAG AA compliance)\n   - Verify screen reader compatibility using NVDA or VoiceOver\n   - Test focus states for interactive elements\n\n4. Performance testing:\n   - Measure and verify component render time is under 100ms\n   - Test with slow network conditions to verify lazy loading\n   - Verify memory usage remains stable during collapse/expand operations\n\nCreate visual regression tests to catch unexpected UI changes during future development.",
+      "status": "pending",
+      "dependencies": [],
+      "priority": "medium",
+      "subtasks": [
+        {
+          "id": 1,
+          "title": "Create responsive video title component",
+          "description": "Implement a responsive component for displaying the video title with proper heading hierarchy, truncation, and font scaling.",
+          "dependencies": [],
+          "details": "Implementation steps:\n1. Create a new React component called VideoTitle\n2. Use appropriate heading tag (h1 or h2) based on page hierarchy\n3. Implement text truncation with CSS (text-overflow: ellipsis) for long titles\n4. Use responsive typography with rem units for font sizing\n5. Add proper ARIA attributes for accessibility\n6. Implement media queries to adjust font size on different screen sizes\n7. Add unit tests to verify truncation behavior and responsive design\n8. Test across different viewport sizes to ensure proper scaling",
+          "status": "pending",
+          "parentTaskId": 18
+        },
+        {
+          "id": 2,
+          "title": "Implement responsive video thumbnail display",
+          "description": "Create a component to display the video thumbnail with proper aspect ratio, lazy loading, and accessibility features.",
+          "dependencies": [],
+          "details": "Implementation steps:\n1. Create a VideoThumbnail component\n2. Maintain 16:9 aspect ratio using CSS (aspect-ratio or padding-top technique)\n3. Implement lazy loading with loading=\"lazy\" attribute\n4. Create a placeholder/skeleton UI for loading state\n5. Ensure proper alt text is passed and used for accessibility\n6. Handle error states if thumbnail fails to load\n7. Optimize image delivery using srcset for responsive images\n8. Test thumbnail rendering at various screen sizes\n9. Verify lazy loading behavior works as expected\n10. Test with screen readers to confirm accessibility",
+          "status": "pending",
+          "parentTaskId": 18
+        },
+        {
+          "id": 3,
+          "title": "Build channel information display",
+          "description": "Implement the channel information section showing channel name and avatar with consistent sizing and fallback options.",
+          "dependencies": [],
+          "details": "Implementation steps:\n1. Create a ChannelInfo component\n2. Design layout with channel avatar and name side by side using Flexbox\n3. Implement circular avatar with consistent sizing across devices\n4. Create a fallback avatar (initials or icon) if no image is available\n5. Make channel name clickable if linking is supported\n6. Ensure touch targets are at least 44×44px for mobile usability\n7. Add hover/focus states for interactive elements\n8. Test with various channel name lengths to ensure proper wrapping\n9. Verify fallback avatar appears correctly when image is missing\n10. Test responsive behavior on different screen sizes",
+          "status": "pending",
+          "parentTaskId": 18
+        },
+        {
+          "id": 4,
+          "title": "Develop collapsible description component",
+          "description": "Create a collapsible description component with expand/collapse functionality and smooth transitions.",
+          "dependencies": [
+            1
+          ],
+          "details": "Implementation steps:\n1. Create a CollapsibleDescription component\n2. Implement state management for expanded/collapsed states\n3. Show only first 2-3 lines when collapsed using line-clamp or max-height\n4. Add \"Show more\"/\"Show less\" toggle button with appropriate styling\n5. Implement smooth CSS transition for expanding/collapsing\n6. Use aria-expanded attribute for accessibility\n7. Ensure keyboard navigation works for the toggle button\n8. Add unit tests for toggle functionality\n9. Test with various description lengths\n10. Verify animation performance on lower-end devices",
+          "status": "pending",
+          "parentTaskId": 18
+        },
+        {
+          "id": 5,
+          "title": "Implement URL parsing and clickable links",
+          "description": "Add functionality to detect URLs in description text and convert them to clickable links with proper security attributes.",
+          "dependencies": [
+            4
+          ],
+          "details": "Implementation steps:\n1. Create a utility function to detect URLs in text\n2. Support various URL formats (http, https, www prefixes)\n3. Convert detected URLs to anchor tags\n4. Ensure links open in new tabs with target=\"_blank\"\n5. Add rel=\"noopener noreferrer\" for security\n6. Preserve non-URL text formatting\n7. Style links appropriately with hover/focus states\n8. Write unit tests for URL detection with various formats\n9. Test with real-world description examples\n10. Verify links open correctly and securely in new tabs",
+          "status": "pending",
+          "parentTaskId": 18
+        },
+        {
+          "id": 6,
+          "title": "Assemble and optimize complete video metadata component",
+          "description": "Integrate all subcomponents into a cohesive VideoMetadata component with performance optimizations and responsive layout.",
+          "dependencies": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "details": "Implementation steps:\n1. Create the main VideoMetadata component\n2. Integrate all previously built subcomponents\n3. Implement responsive layout using CSS Grid or Flexbox\n4. Ensure proper spacing between elements using CSS custom properties\n5. Optimize rendering performance with React.memo or useMemo where appropriate\n6. Implement proper color contrast for accessibility (WCAG AA compliance)\n7. Add comprehensive prop validation with PropTypes or TypeScript\n8. Create Storybook stories for various states and screen sizes\n9. Implement end-to-end tests for the complete component\n10. Perform performance testing to identify and fix any bottlenecks\n11. Test offline functionality if the application supports it",
+          "status": "pending",
+          "parentTaskId": 18
+        }
+      ]
+    },
+    {
+      "id": 19,
+      "title": "Implement Interactive Q&A Section with User-Friendly Interface",
+      "description": "Develop a responsive Q&A component for the gptube MVP that allows users to ask questions and receive AI-generated answers with appropriate feedback mechanisms.",
+      "details": "Create a Q&A section with the following components:\n\n1. Question input field:\n   - Implement a text input with descriptive placeholder (e.g., 'Ask a question about this video...')\n   - Ensure proper sizing and touch target areas for mobile devices\n   - Support multiline input with appropriate height constraints\n   - Add focus/blur states with accessible styling\n\n2. Ask button:\n   - Implement conditional logic to disable the button when input is empty or during loading state\n   - Use visual indicators for disabled/enabled states\n   - Include appropriate hover/active states\n   - Ensure proper spacing from input field\n\n3. Loading indicator:\n   - Create a non-intrusive loading animation that appears while waiting for AI response\n   - Ensure animation is lightweight and doesn't impact performance\n   - Add appropriate ARIA attributes for accessibility\n\n4. Answer display:\n   - Design a visually distinct container for AI responses\n   - Support markdown or rich text formatting if needed\n   - Ensure text is properly sized and readable on all devices\n   - Implement proper overflow handling for long responses\n\n5. Error handling:\n   - Create user-friendly error messages for different failure scenarios\n   - Provide retry options when appropriate\n   - Ensure errors are descriptive but not technical\n\n6. Copy functionality:\n   - Add a copy-to-clipboard button with appropriate icon\n   - Implement success/failure feedback for copy action\n   - Ensure copied text maintains formatting\n\nAll components should follow accessibility guidelines (WCAG 2.1 AA), including proper contrast ratios, keyboard navigation, and screen reader support. Use semantic HTML elements and appropriate ARIA attributes where needed.",
+      "testStrategy": "Testing should cover functionality, usability, and edge cases:\n\n1. Functional testing:\n   - Verify input field accepts text and properly handles different character lengths\n   - Confirm Ask button is disabled when input is empty and during loading\n   - Test that loading indicator appears and disappears at appropriate times\n   - Verify AI responses display correctly with various content lengths\n   - Confirm error messages appear for different error scenarios (network issues, AI service unavailable, etc.)\n   - Test copy functionality works across different browsers\n\n2. Responsive testing:\n   - Test on multiple device sizes (320px, 768px, 1024px, 1440px widths)\n   - Verify touch targets are at least 44x44px on mobile\n   - Ensure no horizontal scrolling occurs on small screens\n   - Check that text remains readable at all viewport sizes\n\n3. Accessibility testing:\n   - Verify all interactive elements are keyboard accessible\n   - Test with screen readers (NVDA, VoiceOver) to ensure proper announcements\n   - Check color contrast meets WCAG AA standards (4.5:1 for normal text)\n   - Verify focus states are visible and clear\n\n4. Performance testing:\n   - Measure and optimize component render time\n   - Ensure animations don't cause layout shifts\n   - Test on low-end devices to verify acceptable performance\n\n5. Edge cases:\n   - Test with extremely long questions and answers\n   - Verify behavior when network is intermittent\n   - Test rapid consecutive question submissions",
+      "status": "pending",
+      "dependencies": [],
+      "priority": "medium",
+      "subtasks": [
+        {
+          "id": 1,
+          "title": "Implement Question Input Field with Responsive Design",
+          "description": "Create a responsive text input component that allows users to enter questions with proper styling and accessibility features.",
+          "dependencies": [],
+          "details": "Implementation details:\n1. Create a form component with a textarea element for question input\n2. Add descriptive placeholder text ('Ask a question about this video...')\n3. Implement responsive sizing with appropriate padding and margins\n4. Set up min/max height constraints with auto-expansion for multiline input\n5. Add focus/blur states with visual indicators (border color change, subtle shadow)\n6. Implement proper touch target areas (min 44x44px) for mobile devices\n7. Add appropriate ARIA attributes (aria-label, aria-required)\n8. Implement form validation to check for empty input\n9. Add event handlers for input changes to track question text\n10. Style the component according to design system guidelines\n\nTesting approach:\n- Test responsiveness across different screen sizes\n- Verify keyboard accessibility (tab navigation, enter submission)\n- Test with screen readers to ensure proper announcements\n- Validate touch target size on mobile devices\n- Test auto-expansion with varying text lengths",
+          "status": "pending",
+          "parentTaskId": 19
+        },
+        {
+          "id": 2,
+          "title": "Create Ask Button with State Management",
+          "description": "Implement an interactive button component that handles different states (enabled, disabled, loading) with appropriate visual feedback.",
+          "dependencies": [
+            1
+          ],
+          "details": "Implementation details:\n1. Create a button component with appropriate text ('Ask' or similar)\n2. Implement conditional rendering logic to disable the button when:\n   - Input field is empty\n   - System is in loading state waiting for AI response\n3. Add visual styling for different states:\n   - Default state with brand colors\n   - Hover state with slight color change\n   - Active/pressed state with inset effect\n   - Disabled state with muted colors and cursor:not-allowed\n4. Ensure proper spacing from input field (consistent margin)\n5. Add appropriate ARIA attributes (aria-disabled when applicable)\n6. Implement click handler to trigger question submission\n7. Add keyboard event listeners for accessibility (Enter key submission)\n\nTesting approach:\n- Verify button state changes correctly based on input field content\n- Test hover, focus, and active states visually\n- Confirm disabled state prevents submission\n- Test keyboard accessibility (Enter key and Space bar activation)\n- Verify proper touch behavior on mobile devices",
+          "status": "pending",
+          "parentTaskId": 19
+        },
+        {
+          "id": 3,
+          "title": "Develop Loading Indicator and API Integration",
+          "description": "Create a loading animation component and integrate with the backend API to handle question submission and response retrieval.",
+          "dependencies": [
+            1,
+            2
+          ],
+          "details": "Implementation details:\n1. Design a lightweight loading animation (spinner, pulsing dots, etc.)\n2. Implement conditional rendering to show/hide the loader based on request state\n3. Add appropriate ARIA attributes (aria-live=\"polite\", role=\"status\")\n4. Create API service function to submit questions to the backend\n5. Implement error handling for network failures and timeout scenarios\n6. Set up state management to track loading status (idle, loading, success, error)\n7. Add debounce mechanism to prevent multiple rapid submissions\n8. Implement request cancellation for abandoned requests\n9. Create timeout handling for long-running requests\n10. Add analytics tracking for question submissions (if applicable)\n\nTesting approach:\n- Test loading indicator visibility during API calls\n- Verify animation performance on low-end devices\n- Test API integration with mock responses\n- Verify error handling for different failure scenarios\n- Test request cancellation and timeout behavior",
+          "status": "pending",
+          "parentTaskId": 19
+        },
+        {
+          "id": 4,
+          "title": "Build Answer Display Component with Formatting Support",
+          "description": "Create a component to display AI-generated answers with proper formatting, styling, and overflow handling.",
+          "dependencies": [
+            3
+          ],
+          "details": "Implementation details:\n1. Create a container component with distinct styling for AI responses\n2. Implement support for markdown or rich text formatting:\n   - Convert markdown to HTML or use a markdown rendering library\n   - Apply appropriate styling to formatted elements (headings, lists, code blocks)\n3. Ensure proper text sizing and line height for readability\n4. Implement responsive width constraints based on device size\n5. Add proper padding and margins for visual separation\n6. Implement overflow handling for long responses:\n   - Max height with scrolling for very long answers\n   - Text wrapping for long words/URLs\n7. Add subtle animations for answer appearance (fade in, slide in)\n8. Implement proper semantic HTML structure (article, headings, paragraphs)\n9. Add appropriate ARIA attributes for accessibility\n\nTesting approach:\n- Test rendering of various markdown/formatting elements\n- Verify overflow behavior with extremely long responses\n- Test responsiveness across different screen sizes\n- Verify screen reader compatibility\n- Test with different font size settings (browser/OS settings)",
+          "status": "pending",
+          "parentTaskId": 19
+        },
+        {
+          "id": 5,
+          "title": "Implement Error Handling and User Feedback",
+          "description": "Create comprehensive error handling with user-friendly error messages and appropriate recovery options.",
+          "dependencies": [
+            3,
+            4
+          ],
+          "details": "Implementation details:\n1. Design error message components with clear, non-technical language\n2. Implement different error states for various scenarios:\n   - Network connectivity issues\n   - Server errors (500 responses)\n   - Rate limiting or quota exceeded\n   - Invalid input or content policy violations\n3. Add retry functionality where appropriate\n4. Implement toast/snackbar notifications for transient errors\n5. Add inline error messages for input validation issues\n6. Create fallback content for when answers cannot be generated\n7. Implement logging for error tracking (client-side or to backend)\n8. Add appropriate ARIA attributes for error announcements\n9. Ensure error messages have sufficient color contrast\n10. Implement error boundary to prevent component tree crashes\n\nTesting approach:\n- Test each error scenario with mocked API responses\n- Verify retry functionality works correctly\n- Test screen reader announcements for errors\n- Verify error messages are clear and actionable\n- Test error boundary recovery",
+          "status": "pending",
+          "parentTaskId": 19
+        },
+        {
+          "id": 6,
+          "title": "Add Copy-to-Clipboard Functionality with Success Feedback",
+          "description": "Implement a copy button that allows users to easily copy AI responses to their clipboard with appropriate feedback.",
+          "dependencies": [
+            4
+          ],
+          "details": "Implementation details:\n1. Create a copy button component with appropriate icon\n2. Position the button appropriately within the answer display component\n3. Implement clipboard API integration:\n   - Use navigator.clipboard.writeText() with fallbacks for older browsers\n   - Handle permissions appropriately\n4. Add visual feedback for copy actions:\n   - Success state (checkmark or success message)\n   - Error state if copy fails\n5. Implement temporary state change to indicate successful copy\n6. Add tooltip or aria-label to explain button purpose\n7. Ensure copied text maintains formatting where possible\n8. Add keyboard shortcut support (optional)\n9. Implement analytics tracking for copy actions (if applicable)\n10. Ensure the button has appropriate hover/focus states\n\nTesting approach:\n- Test copy functionality across different browsers\n- Verify success/error feedback is clear and temporary\n- Test keyboard accessibility for the copy button\n- Verify copied text maintains proper formatting\n- Test with screen readers to ensure proper announcements",
+          "status": "pending",
+          "parentTaskId": 19
+        }
+      ]
+    },
+    {
+      "id": 20,
+      "title": "Implement Extracted Steps/Tasks Feature with UI Components",
+      "description": "Develop a feature that extracts structured, actionable steps from video content and displays them in an accessible, mobile-friendly format with copy functionality.",
+      "details": "Create a comprehensive UI component for displaying extracted steps/tasks from videos:\n\n1. Add an \"Extract all steps\" button:\n   - Position prominently in the video interface\n   - Use either primary or secondary styling based on design system\n   - Ensure proper hover/focus states\n   - Include appropriate icon (e.g., checklist or extract icon)\n\n2. Implement loading state:\n   - Show spinner or progress indicator while extraction is processing\n   - Add appropriate aria attributes for accessibility\n   - Prevent multiple extraction requests\n\n3. Display extracted steps:\n   - Create a structured, hierarchical list format\n   - Apply consistent styling with proper spacing and typography\n   - Ensure each step is clearly delineated\n   - Make text selectable by default\n   - Support markdown or rich text formatting if present in steps\n\n4. Add \"Show more\" functionality:\n   - Initially show a reasonable number of steps (5-7)\n   - Implement expand/collapse toggle if content exceeds this limit\n   - Ensure smooth transition/animation when expanding\n\n5. Implement link detection and rendering:\n   - Auto-detect URLs in step text\n   - Convert them to clickable links\n   - Ensure proper styling for links (underline, color)\n   - Handle external links appropriately (new tab, security attributes)\n\n6. Add copy functionality:\n   - Create a \"Copy to clipboard\" button for the entire steps list\n   - Add visual feedback when copied\n   - Implement individual step copying on hover/interaction\n\nEnsure all components are responsive, with special attention to mobile layouts. Use semantic HTML for accessibility and implement proper keyboard navigation. Optimize rendering performance, especially for large sets of steps.",
+      "testStrategy": "Testing should cover functionality, accessibility, and performance:\n\n1. Functional Testing:\n   - Verify \"Extract all steps\" button triggers extraction process\n   - Confirm loading indicator appears during extraction and disappears after completion\n   - Test that steps are displayed correctly with proper formatting\n   - Verify \"Show more\" button appears only when needed and expands/collapses content\n   - Check that URLs are correctly detected and converted to clickable links\n   - Test copy functionality copies correct content to clipboard\n   - Verify all interactions work on both desktop and mobile devices\n\n2. Accessibility Testing:\n   - Test keyboard navigation through all interactive elements\n   - Verify proper focus states on all interactive elements\n   - Check screen reader compatibility using NVDA and VoiceOver\n   - Ensure proper ARIA attributes on dynamic content\n   - Verify color contrast meets WCAG AA standards\n\n3. Performance Testing:\n   - Measure render time for different quantities of steps (10, 50, 100+)\n   - Test on low-end mobile devices to ensure smooth performance\n   - Verify no layout shifts occur during loading or expansion\n   - Check memory usage when displaying large sets of steps\n\n4. Edge Cases:\n   - Test with empty results (no steps extracted)\n   - Test with extremely long step text\n   - Test with special characters and emoji in step content\n   - Verify behavior when network is slow or disconnected",
+      "status": "pending",
+      "dependencies": [],
+      "priority": "medium",
+      "subtasks": [
+        {
+          "id": 1,
+          "title": "Implement 'Extract all steps' button with loading state",
+          "description": "Create a responsive button component that triggers the step extraction process and displays a loading state while processing.",
+          "dependencies": [],
+          "details": "Implementation steps:\n1. Create a reusable button component with primary/secondary styling options\n2. Add appropriate icon (checklist or extract icon) with proper alignment\n3. Implement hover/focus states according to design system\n4. Add loading state with spinner/progress indicator\n5. Include proper ARIA attributes (aria-busy, aria-live) for accessibility\n6. Implement state management to prevent multiple extraction requests\n7. Position the button prominently in the video interface\n8. Ensure the button is responsive across all device sizes\n\nTesting approach:\n- Unit test button states (default, hover, focus, loading)\n- Test that button is disabled during loading state\n- Verify ARIA attributes are correctly applied\n- Test responsive behavior across breakpoints",
+          "status": "pending",
+          "parentTaskId": 20
+        },
+        {
+          "id": 2,
+          "title": "Create structured steps display component",
+          "description": "Develop a component to render extracted steps in a hierarchical, well-formatted list with proper styling and accessibility.",
+          "dependencies": [
+            1
+          ],
+          "details": "Implementation steps:\n1. Create a container component for the steps list with proper semantic HTML (ol/ul)\n2. Implement styling for step items with consistent spacing and typography\n3. Add clear visual delineation between steps\n4. Ensure text is selectable by default\n5. Support markdown or rich text formatting if present in steps\n6. Apply proper heading hierarchy for accessibility\n7. Implement responsive layouts for different screen sizes\n8. Add appropriate ARIA roles and attributes\n\nTesting approach:\n- Unit test rendering of steps with various content types\n- Test accessibility using screen readers\n- Verify text selection works as expected\n- Test responsive behavior on different screen sizes\n- Verify markdown/rich text rendering",
+          "status": "pending",
+          "parentTaskId": 20
+        },
+        {
+          "id": 3,
+          "title": "Implement 'Show more' functionality",
+          "description": "Add the ability to expand/collapse the steps list when it exceeds a certain number of items, with smooth animations.",
+          "dependencies": [
+            2
+          ],
+          "details": "Implementation steps:\n1. Modify the steps display component to initially show a limited number (5-7) of steps\n2. Create an expand/collapse toggle button with appropriate styling\n3. Implement state management for expanded/collapsed state\n4. Add smooth CSS transitions/animations for expanding/collapsing\n5. Ensure proper keyboard accessibility for the toggle\n6. Update ARIA attributes to reflect expanded/collapsed state\n7. Optimize rendering performance for large sets of steps\n\nTesting approach:\n- Test toggle functionality with various numbers of steps\n- Verify animation smoothness\n- Test keyboard navigation and accessibility\n- Verify performance with large datasets\n- Test across different browsers and devices",
+          "status": "pending",
+          "parentTaskId": 20
+        },
+        {
+          "id": 4,
+          "title": "Add URL detection and link rendering",
+          "description": "Implement functionality to detect URLs within step text and render them as properly styled, clickable links.",
+          "dependencies": [
+            2
+          ],
+          "details": "Implementation steps:\n1. Create a utility function to detect URLs in text using regex\n2. Implement a component to render detected URLs as clickable links\n3. Apply proper styling for links (underline, color) according to design system\n4. Add appropriate attributes for external links (target=\"_blank\", rel=\"noopener noreferrer\")\n5. Ensure links are keyboard accessible\n6. Handle edge cases (malformed URLs, URLs within markdown)\n7. Test performance impact on rendering\n\nTesting approach:\n- Unit test URL detection with various URL formats\n- Verify links open correctly\n- Test keyboard accessibility\n- Verify security attributes are correctly applied\n- Test with different browsers",
+          "status": "pending",
+          "parentTaskId": 20
+        },
+        {
+          "id": 5,
+          "title": "Implement copy functionality for steps",
+          "description": "Add the ability to copy individual steps or the entire list of steps to the clipboard with visual feedback.",
+          "dependencies": [
+            2
+          ],
+          "details": "Implementation steps:\n1. Create a \"Copy to clipboard\" button for the entire steps list\n2. Add individual copy buttons/icons that appear on hover for each step\n3. Implement clipboard API integration for copying text\n4. Add visual feedback when content is copied (toast notification or button state change)\n5. Handle copy failures gracefully\n6. Ensure proper keyboard accessibility for copy functions\n7. Format copied text appropriately (maintain numbering, formatting)\n\nTesting approach:\n- Test copying entire list and individual steps\n- Verify visual feedback works correctly\n- Test keyboard accessibility\n- Test across different browsers (clipboard API support varies)\n- Verify copied text formatting is correct",
+          "status": "pending",
+          "parentTaskId": 20
+        },
+        {
+          "id": 6,
+          "title": "Optimize for performance and accessibility",
+          "description": "Perform final optimizations to ensure the feature is performant, fully accessible, and works well across all devices.",
+          "dependencies": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "details": "Implementation steps:\n1. Implement virtualized rendering for large lists of steps\n2. Add comprehensive keyboard navigation throughout the component\n3. Ensure all interactive elements have appropriate focus states\n4. Verify and enhance screen reader compatibility\n5. Optimize mobile layouts with touch-friendly targets\n6. Add appropriate color contrast for accessibility\n7. Implement performance monitoring and optimize render cycles\n8. Add comprehensive error handling for all user interactions\n\nTesting approach:\n- Run accessibility audit (WCAG compliance)\n- Test with screen readers on multiple platforms\n- Measure and benchmark performance metrics\n- Test on low-end devices to verify performance\n- Conduct cross-browser and cross-device testing\n- Verify keyboard-only navigation works end-to-end",
+          "status": "pending",
+          "parentTaskId": 20
+        }
+      ]
+    },
+    {
+      "id": 21,
+      "title": "Implement User Feedback System with Status Indicators for GPTube MVP",
+      "description": "Create a comprehensive feedback system that provides users with clear status indicators and notifications for all asynchronous operations and user actions within the GPTube application.",
+      "details": "Develop a unified feedback system with three key components:\n\n1. Loading/Processing Indicators:\n- Implement a consistent loading indicator system for all asynchronous operations (API fetches, AI processing, etc.)\n- Create skeleton loaders for content areas during initial loads\n- Add progress indicators for operations with known duration (uploads, long AI processes)\n- Ensure indicators are visible but non-intrusive, following mobile-first principles\n- Implement reduced motion alternatives for accessibility compliance\n\n2. Error/Success Messaging:\n- Design a toast notification system for temporary messages\n- Create inline error states for form fields and interactive elements\n- Implement persistent error messages for critical failures\n- Ensure all error messages provide clear guidance on how to resolve issues\n- Use appropriate color coding (with accessible contrast ratios) and icons\n- Include error codes where applicable for troubleshooting\n- Make all messages screen-reader friendly with appropriate ARIA attributes\n\n3. Copy/Export Action Feedback:\n- Add visual confirmation when content is copied to clipboard\n- Provide download/export progress and completion notifications\n- Include fallback mechanisms for browsers without clipboard API support\n\nTechnical Requirements:\n- Use React context to manage global feedback state\n- Implement with performance in mind (avoid unnecessary re-renders)\n- Ensure all components work across mobile, tablet and desktop viewports\n- Follow WCAG 2.1 AA standards for all feedback elements\n- Add appropriate data-testid attributes for testing",
+      "testStrategy": "Testing should cover all aspects of the feedback system:\n\n1. Unit Tests:\n- Verify loading indicators appear and disappear at appropriate times\n- Test error message rendering with various error conditions\n- Confirm success messages display correctly\n- Validate accessibility properties of all feedback components\n\n2. Integration Tests:\n- Test the complete flow of operations that trigger feedback (e.g., form submission → loading → success/error)\n- Verify clipboard operations show appropriate feedback\n- Test error handling for network failures, server errors, and validation issues\n\n3. Accessibility Testing:\n- Use automated tools (Axe, Lighthouse) to verify WCAG 2.1 AA compliance\n- Test with screen readers to ensure all feedback is properly announced\n- Verify keyboard navigation works for dismissing messages\n\n4. Visual Regression Testing:\n- Capture screenshots of various feedback states for comparison in future updates\n- Test on multiple viewport sizes to verify mobile-first implementation\n\n5. Performance Testing:\n- Measure impact of feedback system on overall application performance\n- Verify no memory leaks occur with repeated feedback events\n\n6. User Testing:\n- Conduct user tests to ensure feedback is clear and helpful\n- Verify users understand how to recover from error states",
+      "status": "pending",
+      "dependencies": [],
+      "priority": "medium",
+      "subtasks": [
+        {
+          "id": 1,
+          "title": "Implement Loading/Processing Indicator System",
+          "description": "Create a consistent loading indicator system for all asynchronous operations with skeleton loaders, progress indicators, and accessibility features.",
+          "dependencies": [],
+          "details": "Implementation steps:\n1. Create a React context (FeedbackContext) with provider to manage global loading states\n2. Develop reusable components:\n   - Spinner component for general loading states\n   - Skeleton loader components for content areas (cards, text blocks, etc.)\n   - Progress bar component for operations with known duration\n3. Implement hooks for managing loading states:\n   - useLoading hook to toggle loading states\n   - useProgress hook for tracking progress percentage\n4. Add reduced motion alternatives using prefers-reduced-motion media query\n5. Ensure all components are responsive following mobile-first principles\n6. Add appropriate ARIA attributes and roles for accessibility\n7. Implement performance optimizations (useMemo, useCallback) to prevent re-renders\n\nTesting approach:\n1. Unit tests for each component with various states\n2. Integration tests for context provider behavior\n3. Accessibility testing with screen readers\n4. Visual regression tests across different viewport sizes\n5. Performance testing to ensure minimal impact on application speed",
+          "status": "pending",
+          "parentTaskId": 21
+        },
+        {
+          "id": 2,
+          "title": "Develop Error/Success Messaging System",
+          "description": "Design and implement a comprehensive notification system with toast messages, inline errors, and persistent error states with accessibility compliance.",
+          "dependencies": [
+            1
+          ],
+          "details": "Implementation steps:\n1. Extend the FeedbackContext to include error and success message management\n2. Create toast notification components:\n   - Design container for positioning notifications\n   - Implement auto-dismissing logic with configurable timeouts\n   - Add animation for entry/exit with reduced motion alternatives\n3. Develop inline error components for form fields:\n   - Error message display below input fields\n   - Visual indicators (border color, icons) for error states\n   - Focus management for accessibility\n4. Implement persistent error message components for critical failures\n5. Create utility functions for common error scenarios\n6. Ensure proper color contrast (WCAG 2.1 AA) for all states\n7. Add error code display and documentation references where applicable\n8. Implement proper ARIA live regions for dynamic content updates\n\nTesting approach:\n1. Unit tests for individual components\n2. Integration tests for error handling flows\n3. Accessibility testing for color contrast and screen reader announcements\n4. User testing for error message clarity\n5. Test error recovery paths and guidance effectiveness",
+          "status": "pending",
+          "parentTaskId": 21
+        },
+        {
+          "id": 3,
+          "title": "Implement Copy/Export Action Feedback System",
+          "description": "Add visual confirmation for clipboard operations and download/export progress with appropriate fallbacks for browser compatibility.",
+          "dependencies": [
+            1,
+            2
+          ],
+          "details": "Implementation steps:\n1. Extend FeedbackContext to track copy/export operations\n2. Create clipboard utility functions:\n   - Implement copy-to-clipboard functionality with modern Clipboard API\n   - Add fallback mechanism for browsers without Clipboard API support\n   - Create success/error handlers for clipboard operations\n3. Develop export/download feedback components:\n   - Progress indicator for large downloads\n   - Success confirmation for completed downloads\n   - Error handling for failed exports\n4. Implement visual confirmation components:\n   - Temporary overlay or icon change for copied elements\n   - Animation for successful actions (with reduced motion alternatives)\n5. Add appropriate ARIA announcements for non-visual feedback\n6. Ensure all components work across different viewport sizes\n7. Add data-testid attributes for all interactive elements\n\nTesting approach:\n1. Unit tests for clipboard and export utilities\n2. Integration tests for the complete feedback flow\n3. Cross-browser testing for compatibility\n4. Accessibility testing for keyboard users and screen readers\n5. User testing to ensure feedback is clear and helpful",
+          "status": "pending",
+          "parentTaskId": 21
+        }
+      ]
     }
   ],
   "metadata": {
