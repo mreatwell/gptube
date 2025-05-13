@@ -69,9 +69,10 @@ const useMobile = () => {
 
 const useCopy = (text) => {
   const [copied, setCopied] = useState(false);
+  const [showManualCopy, setShowManualCopy] = useState(false);
   const copy = async () => {
     if (typeof navigator === "undefined" || !navigator.clipboard) {
-      alert("Copy to clipboard is not supported in this browser");
+      setShowManualCopy(true);
       return;
     }
     try {
@@ -79,10 +80,10 @@ const useCopy = (text) => {
       setCopied(true);
       setTimeout(() => setCopied(false), 1200);
     } catch {
-      alert("Copy to clipboard failed");
+      setShowManualCopy(true);
     }
   };
-  return [copied, copy];
+  return [copied, copy, showManualCopy, setShowManualCopy];
 };
 
 // Helper: parse timestamps and return seconds
@@ -278,6 +279,21 @@ const HistorySidebar = ({
   </aside>
 );
 
+// Utility to export text as a .txt file
+const exportText = (text, filename) => {
+  const blob = new Blob([text], { type: "text/plain" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(() => {
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }, 0);
+};
+
 const HomePage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [videoId, setVideoId] = useState(null);
@@ -391,10 +407,17 @@ const HomePage = () => {
   };
 
   // Copy hooks
-  const [summaryCopied, copySummary] = useCopy(summary);
-  const [transcriptCopied, copyTranscript] = useCopy(transcript);
-  const [qaCopied, copyQa] = useCopy(qaAnswer);
-  const [stepsCopied, copySteps] = useCopy(steps);
+  const [summaryCopied, copySummary, summaryManualCopy, setSummaryManualCopy] =
+    useCopy(summary);
+  const [
+    transcriptCopied,
+    copyTranscript,
+    transcriptManualCopy,
+    setTranscriptManualCopy,
+  ] = useCopy(transcript);
+  const [qaCopied, copyQa, qaManualCopy, setQaManualCopy] = useCopy(qaAnswer);
+  const [stepsCopied, copySteps, stepsManualCopy, setStepsManualCopy] =
+    useCopy(steps);
 
   // When a new video is processed, reset player state
   React.useEffect(() => {
@@ -594,7 +617,39 @@ const HomePage = () => {
                       >
                         {summaryCopied ? "Copied!" : "Copy"}
                       </Button>
+                      <Button
+                        onClick={() => exportText(summary, "summary.txt")}
+                        size="sm"
+                        aria-label="Export summary as .txt"
+                        style={{
+                          fontSize: "1rem",
+                          padding: "0.3em 0.8em",
+                          marginLeft: 8,
+                        }}
+                      >
+                        Export
+                      </Button>
                     </div>
+                    {summaryManualCopy && (
+                      <div style={{ marginTop: 8 }}>
+                        <p style={{ color: "#b26a00", fontWeight: 500 }}>
+                          Copy to clipboard is not supported. Please select and
+                          copy manually:
+                        </p>
+                        <textarea
+                          value={summary}
+                          readOnly
+                          style={{ width: "100%", minHeight: 80, fontSize: 15 }}
+                        />
+                        <Button
+                          onClick={() => setSummaryManualCopy(false)}
+                          size="sm"
+                          style={{ marginTop: 6 }}
+                        >
+                          Close
+                        </Button>
+                      </div>
+                    )}
                     <div
                       style={{
                         whiteSpace: "pre-wrap",
@@ -651,7 +706,39 @@ const HomePage = () => {
                       >
                         {transcriptCopied ? "Copied!" : "Copy"}
                       </Button>
+                      <Button
+                        onClick={() => exportText(transcript, "transcript.txt")}
+                        size="sm"
+                        aria-label="Export transcript as .txt"
+                        style={{
+                          fontSize: "1rem",
+                          padding: "0.3em 0.8em",
+                          marginLeft: 8,
+                        }}
+                      >
+                        Export
+                      </Button>
                     </div>
+                    {transcriptManualCopy && (
+                      <div style={{ marginTop: 8 }}>
+                        <p style={{ color: "#b26a00", fontWeight: 500 }}>
+                          Copy to clipboard is not supported. Please select and
+                          copy manually:
+                        </p>
+                        <textarea
+                          value={transcript}
+                          readOnly
+                          style={{ width: "100%", minHeight: 80, fontSize: 15 }}
+                        />
+                        <Button
+                          onClick={() => setTranscriptManualCopy(false)}
+                          size="sm"
+                          style={{ marginTop: 6 }}
+                        >
+                          Close
+                        </Button>
+                      </div>
+                    )}
                     <div
                       style={{
                         whiteSpace: "pre-wrap",
@@ -794,6 +881,38 @@ const HomePage = () => {
                         >
                           {qaCopied ? "Copied!" : "Copy"}
                         </Button>
+                        <Button
+                          onClick={() => exportText(qaAnswer, "qa-answer.txt")}
+                          size="sm"
+                          aria-label="Export answer as .txt"
+                          style={{
+                            fontSize: "1rem",
+                            padding: "0.3em 0.8em",
+                            marginLeft: 8,
+                          }}
+                        >
+                          Export
+                        </Button>
+                      </div>
+                    )}
+                    {qaManualCopy && (
+                      <div style={{ marginTop: 8 }}>
+                        <p style={{ color: "#b26a00", fontWeight: 500 }}>
+                          Copy to clipboard is not supported. Please select and
+                          copy manually:
+                        </p>
+                        <textarea
+                          value={qaAnswer}
+                          readOnly
+                          style={{ width: "100%", minHeight: 80, fontSize: 15 }}
+                        />
+                        <Button
+                          onClick={() => setQaManualCopy(false)}
+                          size="sm"
+                          style={{ marginTop: 6 }}
+                        >
+                          Close
+                        </Button>
                       </div>
                     )}
                   </div>
@@ -838,7 +957,39 @@ const HomePage = () => {
                       >
                         {stepsCopied ? "Copied!" : "Copy"}
                       </Button>
+                      <Button
+                        onClick={() => exportText(steps, "steps.txt")}
+                        size="sm"
+                        aria-label="Export steps as .txt"
+                        style={{
+                          fontSize: "1rem",
+                          padding: "0.3em 0.8em",
+                          marginLeft: 8,
+                        }}
+                      >
+                        Export
+                      </Button>
                     </div>
+                    {stepsManualCopy && (
+                      <div style={{ marginTop: 8 }}>
+                        <p style={{ color: "#b26a00", fontWeight: 500 }}>
+                          Copy to clipboard is not supported. Please select and
+                          copy manually:
+                        </p>
+                        <textarea
+                          value={steps}
+                          readOnly
+                          style={{ width: "100%", minHeight: 80, fontSize: 15 }}
+                        />
+                        <Button
+                          onClick={() => setStepsManualCopy(false)}
+                          size="sm"
+                          style={{ marginTop: 6 }}
+                        >
+                          Close
+                        </Button>
+                      </div>
+                    )}
                     <Button
                       onClick={async () => {
                         setStepsLoading(true);
