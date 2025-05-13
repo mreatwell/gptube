@@ -25,9 +25,9 @@ export default async function handler(req, res) {
     let prompt = "";
     if (!continueFrom) {
       const truncated = truncateText(transcript);
-      prompt = `Extract and list all actionable steps, tasks, or processes described in this transcript. For each, break it down into subtasks if possible. Ignore filler and focus on concrete actions.\n\nTranscript:\n${truncated}`;
+      prompt = `Extract and list all actionable steps, tasks, or processes described in this transcript. For each, break it down into subtasks if possible. Ignore filler and focus on concrete actions. If possible, include a timestamp (e.g., 1:23, 12:45) for each step or subtask, so the viewer can jump to those parts in the video.\n\nTranscript:\n${truncated}`;
     } else {
-      prompt = `Continue extracting actionable steps, tasks, or processes from the following transcript. Continue from where the previous extraction left off.\n\nTranscript:\n${truncateText(transcript)}`;
+      prompt = `Continue extracting actionable steps, tasks, or processes from the following transcript. Continue from where the previous extraction left off. If possible, include timestamps for each step.\n\nTranscript:\n${truncateText(transcript)}`;
       if (continueFrom) {
         prompt += `\n\nPrevious extracted steps:\n${continueFrom}`;
       }

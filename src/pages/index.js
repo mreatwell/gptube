@@ -1,9 +1,282 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import UrlInputForm from "../components/UrlInputForm"; // Import the component
 import Button from "../components/ui/Button/Button"; // Import the new Button component
 import Radio from "../components/ui/Radio/Radio"; // Import the Radio component
 import Select from "../components/ui/Select/Select"; // Import the Select component
 import Modal from "../components/ui/Modal/Modal"; // Import the Modal component
+
+const Card = ({ children, style = {}, ...props }) => (
+  <div
+    style={{
+      background: "var(--color-surface, #f8f6ff)",
+      color: "var(--color-text, #222)",
+      borderRadius: "1rem",
+      boxShadow: "0 2px 12px rgba(179,157,219,0.10)",
+      border: "1px solid var(--color-border, #e0e0e0)",
+      padding: "1.25rem 1rem",
+      margin: "1.5rem auto 0",
+      maxWidth: 700,
+      width: "100%",
+      ...style,
+    }}
+    {...props}
+  >
+    {children}
+  </div>
+);
+
+const Feedback = ({ type, message }) => {
+  if (!message) return null;
+  let color = "#388e3c",
+    icon = "✅";
+  if (type === "error") {
+    color = "#d32f2f";
+    icon = "❌";
+  }
+  if (type === "warn") {
+    color = "#b26a00";
+    icon = "⚠️";
+  }
+  return (
+    <div
+      style={{
+        color,
+        fontWeight: 500,
+        margin: "1rem 0",
+        fontSize: "1.08rem",
+        display: "flex",
+        alignItems: "center",
+        gap: 8,
+      }}
+      role="status"
+      aria-live="polite"
+    >
+      <span aria-hidden="true">{icon}</span> <span>{message}</span>
+    </div>
+  );
+};
+
+const useMobile = () => {
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth <= 700);
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+  return isMobile;
+};
+
+const useCopy = (text) => {
+  const [copied, setCopied] = useState(false);
+  const copy = async () => {
+    if (typeof navigator === "undefined" || !navigator.clipboard) {
+      alert("Copy to clipboard is not supported in this browser");
+      return;
+    }
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1200);
+    } catch {
+      alert("Copy to clipboard failed");
+    }
+  };
+  return [copied, copy];
+};
+
+// Helper: parse timestamps and return seconds
+const parseTimestamp = (str) => {
+  const parts = str.split(":").map(Number);
+  if (parts.length === 2) return parts[0] * 60 + parts[1];
+  if (parts.length === 3) return parts[0] * 3600 + parts[1] * 60 + parts[2];
+  return 0;
+};
+
+// Helper: linkify timestamps in text
+const linkifyTimestamps = (text, onClick) => {
+  if (!text) return null;
+  const regex = /\b(\d{1,2}:\d{2}(?::\d{2})?)\b/g;
+  const parts = [];
+  let lastIdx = 0;
+  let match;
+  let idx = 0;
+  while ((match = regex.exec(text))) {
+    const [ts] = match;
+    const start = match.index;
+    if (start > lastIdx) parts.push(text.slice(lastIdx, start));
+    parts.push(
+      <button
+        key={`ts-${idx++}`}
+        onClick={() => onClick(parseTimestamp(ts))}
+        style={{
+          color: "#6c4f99",
+          textDecoration: "underline",
+          background: "none",
+          border: "none",
+          cursor: "pointer",
+          fontWeight: 600,
+          fontSize: "inherit",
+          padding: 0,
+        }}
+        aria-label={`Jump to ${ts}`}
+      >
+        {ts}
+      </button>
+    );
+    lastIdx = start + ts.length;
+  }
+  if (lastIdx < text.length) parts.push(text.slice(lastIdx));
+  return parts;
+};
+
+const getHistoryFromStorage = () => {
+  try {
+    return JSON.parse(localStorage.getItem("gptube_history") || "[]");
+  } catch {
+    return [];
+  }
+};
+
+const saveHistoryToStorage = (history) => {
+  localStorage.setItem("gptube_history", JSON.stringify(history));
+};
+
+const HistorySidebar = ({
+  history,
+  onSelect,
+  onRemove,
+  onClear,
+  open,
+  setOpen,
+  isMobile,
+}) => (
+  <aside
+    style={{
+      position: isMobile ? "fixed" : "sticky",
+      top: 0,
+      left: isMobile ? (open ? 0 : "-100vw") : 0,
+      width: isMobile ? "80vw" : 260,
+      height: isMobile ? "100vh" : "100vh",
+      background: "#f8f6ff",
+      borderRight: "1px solid #e0e0e0",
+      boxShadow: isMobile && open ? "2px 0 12px rgba(0,0,0,0.10)" : "none",
+      zIndex: 100,
+      transition: "left 0.3s cubic-bezier(.4,0,.2,1)",
+      padding: 0,
+      overflowY: "auto",
+      display: "flex",
+      flexDirection: "column",
+    }}
+    aria-label="Video history"
+  >
+    <div
+      style={{
+        padding: "1rem 1rem 0.5rem",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+      }}
+    >
+      <b style={{ fontSize: "1.1rem" }}>History</b>
+      {isMobile && (
+        <button
+          onClick={() => setOpen(false)}
+          aria-label="Close history"
+          style={{
+            background: "none",
+            border: "none",
+            fontSize: 22,
+            cursor: "pointer",
+          }}
+        >
+          ×
+        </button>
+      )}
+    </div>
+    <div style={{ flex: 1, overflowY: "auto" }}>
+      {history.length === 0 && (
+        <div style={{ padding: "1rem", color: "#888" }}>No history yet.</div>
+      )}
+      {history.map((item, i) => (
+        <div
+          key={item.videoId + i}
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 10,
+            padding: "0.7rem 1rem",
+            borderBottom: "1px solid #eee",
+            cursor: "pointer",
+            background: item.selected ? "#e0e7ff" : "none",
+          }}
+          onClick={() => onSelect(item)}
+          tabIndex={0}
+          aria-label={`Load video ${item.title || item.videoId}`}
+        >
+          <img
+            src={item.thumbnail}
+            alt="Video thumbnail"
+            style={{
+              width: 48,
+              height: 36,
+              objectFit: "cover",
+              borderRadius: 4,
+              flexShrink: 0,
+            }}
+          />
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div
+              style={{
+                fontWeight: 600,
+                fontSize: 15,
+                whiteSpace: "nowrap",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+              }}
+            >
+              {item.title || item.videoId}
+            </div>
+            <div style={{ fontSize: 12, color: "#888" }}>{item.date}</div>
+          </div>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onRemove(item.videoId);
+            }}
+            aria-label="Remove from history"
+            style={{
+              background: "none",
+              border: "none",
+              color: "#d32f2f",
+              fontSize: 18,
+              cursor: "pointer",
+            }}
+          >
+            🗑️
+          </button>
+        </div>
+      ))}
+    </div>
+    {history.length > 0 && (
+      <button
+        onClick={onClear}
+        style={{
+          margin: "1rem",
+          background: "#fff",
+          border: "1px solid #e0e0e0",
+          borderRadius: 6,
+          padding: "0.5em 1em",
+          color: "#d32f2f",
+          fontWeight: 600,
+          cursor: "pointer",
+        }}
+      >
+        Clear All
+      </button>
+    )}
+  </aside>
+);
 
 const HomePage = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -11,9 +284,6 @@ const HomePage = () => {
   const [videoStatus, setVideoStatus] = useState(null); // New: status from API
   const [apiMessage, setApiMessage] = useState(""); // New: message from API
   const [error, setError] = useState(null);
-  const [selectedOption, setSelectedOption] = useState("option1"); // For radio group
-  const [selectedDropdown, setSelectedDropdown] = useState(""); // For select dropdown
-  const [isModalOpen, setIsModalOpen] = useState(false); // For modal demo
   const [transcript, setTranscript] = useState(""); // New: state for transcript
   const [summary, setSummary] = useState(""); // New: state for summary
   const [qaQuestion, setQaQuestion] = useState("");
@@ -25,6 +295,53 @@ const HomePage = () => {
   const [stepsLoading, setStepsLoading] = useState(false);
   const [stepsError, setStepsError] = useState("");
   const [stepsShowMore, setStepsShowMore] = useState(false);
+  const [summaryOpen, setSummaryOpen] = useState(true);
+  const [transcriptOpen, setTranscriptOpen] = useState(false);
+  const [qaOpen, setQaOpen] = useState(false);
+  const [stepsOpen, setStepsOpen] = useState(false);
+  const [playerKey, setPlayerKey] = useState(0); // force iframe reload
+  const [playerTime, setPlayerTime] = useState(0);
+  const videoRef = useRef();
+  const [history, setHistory] = useState([]);
+  const [historyOpen, setHistoryOpen] = useState(false);
+  const isMobile = useMobile();
+
+  // Load history from localStorage on mount
+  useEffect(() => {
+    setHistory(getHistoryFromStorage());
+  }, []);
+
+  // Save history to localStorage on change
+  useEffect(() => {
+    saveHistoryToStorage(history);
+  }, [history]);
+
+  // Add to history after successful video processing
+  const addToHistory = (data) => {
+    const { videoId, summary, transcript, steps, chunks, metadata } = data;
+    const title = metadata?.snippet?.title || videoId;
+    const thumbnail =
+      metadata?.snippet?.thumbnails?.default?.url ||
+      `https://img.youtube.com/vi/${videoId}/default.jpg`;
+    const date =
+      typeof window !== "undefined" ? new Date().toLocaleString() : "";
+    // Remove duplicates
+    const filtered = history.filter((item) => item.videoId !== videoId);
+    setHistory([
+      {
+        videoId,
+        title,
+        thumbnail,
+        date,
+        summary,
+        transcript,
+        steps,
+        chunks,
+        metadata,
+      },
+      ...filtered,
+    ]);
+  };
 
   // Placeholder function to handle form submission
   const handleUrlSubmit = async (url) => {
@@ -51,6 +368,7 @@ const HomePage = () => {
       setTranscript(data.transcript || "");
       setSummary(data.summary || "");
       setChunks(data.chunks || []); // Store chunks for Q&A
+      addToHistory(data);
     } catch (err) {
       console.error("Error submitting URL:", err);
       setError(
@@ -63,352 +381,559 @@ const HomePage = () => {
     }
   };
 
+  // Helper for feedback type
+  const getFeedbackType = () => {
+    if (error)
+      return error.toLowerCase().includes("unavailable") ? "warn" : "error";
+    if (apiMessage && apiMessage.toLowerCase().includes("found"))
+      return "success";
+    return null;
+  };
+
+  // Copy hooks
+  const [summaryCopied, copySummary] = useCopy(summary);
+  const [transcriptCopied, copyTranscript] = useCopy(transcript);
+  const [qaCopied, copyQa] = useCopy(qaAnswer);
+  const [stepsCopied, copySteps] = useCopy(steps);
+
+  // When a new video is processed, reset player state
+  React.useEffect(() => {
+    setPlayerTime(0);
+    setPlayerKey((k) => k + 1);
+  }, [videoId]);
+
+  // Helper: Seek video by updating iframe src
+  const seekTo = (seconds) => {
+    setPlayerTime(seconds);
+    setPlayerKey((k) => k + 1); // force iframe reload
+  };
+
+  // Helper: get embed URL with start param and autoplay
+  const getEmbedUrl = () => {
+    if (!videoId) return "";
+    let url = `https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1`;
+    if (playerTime > 0) url += `&start=${playerTime}&autoplay=1`;
+    else url += `&autoplay=0`;
+    return url;
+  };
+
+  // Load from history
+  const loadFromHistory = (item) => {
+    setVideoId(item.videoId);
+    setSummary(item.summary || "");
+    setTranscript(item.transcript || "");
+    setSteps(item.steps || "");
+    setChunks(item.chunks || []);
+    setApiMessage("Loaded from history.");
+    setVideoStatus("history");
+    setSummaryOpen(true);
+    setTranscriptOpen(false);
+    setQaOpen(false);
+    setStepsOpen(false);
+    setPlayerTime(0);
+    setPlayerKey((k) => k + 1);
+    setHistory((h) =>
+      h.map((hitem) => ({ ...hitem, selected: hitem.videoId === item.videoId }))
+    );
+    if (isMobile) setHistoryOpen(false);
+  };
+
+  // Remove from history
+  const removeFromHistory = (videoId) => {
+    setHistory((h) => h.filter((item) => item.videoId !== videoId));
+  };
+
+  // Clear all history
+  const clearHistory = () => {
+    setHistory([]);
+  };
+
   return (
-    <div style={{ padding: "20px", textAlign: "center" }}>
-      <h1>Welcome to gptube - YouTube Tutorial Companion</h1>
-      <p>Submit a YouTube URL to get started!</p>
-
-      <UrlInputForm onSubmit={handleUrlSubmit} isLoading={isLoading} />
-
-      {/* Add the new button here for testing */}
-      <div style={{ marginTop: "20px" }}>
-        <Button onClick={() => alert("Primary button clicked!")}>
-          Primary Button
-        </Button>
-        <Button variant="secondary" style={{ marginLeft: "10px" }}>
-          Secondary
-        </Button>
-        <Button variant="text" style={{ marginLeft: "10px" }}>
-          Text Button
-        </Button>
-        <Button disabled style={{ marginLeft: "10px" }}>
-          Disabled
-        </Button>
-      </div>
-
-      {/* Radio group example */}
-      <div
-        style={{
-          marginTop: "20px",
-          display: "flex",
-          justifyContent: "center",
-          gap: "20px",
-        }}
-      >
-        <Radio
-          id="radio1"
-          name="exampleGroup"
-          label="Option 1"
-          value="option1"
-          checked={selectedOption === "option1"}
-          onChange={() => setSelectedOption("option1")}
-        />
-        <Radio
-          id="radio2"
-          name="exampleGroup"
-          label="Option 2"
-          value="option2"
-          checked={selectedOption === "option2"}
-          onChange={() => setSelectedOption("option2")}
-        />
-        <Radio
-          id="radio3"
-          name="exampleGroup"
-          label="Disabled"
-          value="option3"
-          checked={selectedOption === "option3"}
-          onChange={() => setSelectedOption("option3")}
-          disabled
-        />
-      </div>
-
-      {/* Select dropdown example */}
-      <div
-        style={{ marginTop: "20px", display: "flex", justifyContent: "center" }}
-      >
-        <Select
-          name="exampleSelect"
-          value={selectedDropdown}
-          onChange={(e) => setSelectedDropdown(e.target.value)}
-          options={[
-            { value: "apple", label: "Apple" },
-            { value: "banana", label: "Banana" },
-            { value: "orange", label: "Orange" },
-            { value: "disabled", label: "Disabled Option", disabled: true },
-          ]}
-          placeholder="Choose a fruit"
-        />
-      </div>
-
-      {/* Modal demo */}
-      <div
-        style={{ marginTop: "20px", display: "flex", justifyContent: "center" }}
-      >
-        <Button onClick={() => setIsModalOpen(true)}>Open Modal</Button>
-      </div>
-      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
-        <h2>Modal Title</h2>
-        <p>This is a demo modal. Click outside or press Escape to close.</p>
-        <div style={{ marginTop: "20px", textAlign: "right" }}>
-          <Button variant="secondary" onClick={() => setIsModalOpen(false)}>
-            Close
-          </Button>
-        </div>
-      </Modal>
-
-      {error && (
-        <p style={{ color: "red", marginTop: "15px" }}>Error: {error}</p>
-      )}
-
-      {videoId && !isLoading && (
-        <div style={{ color: "green", marginTop: "15px" }}>
-          <p>
-            Processing started for video ID: <b>{videoId}</b>.<br />
-            Status: <b>{videoStatus}</b>
+    <div
+      style={{
+        display: "flex",
+        minHeight: "100vh",
+        background: "var(--color-bg, #f9f8fa)",
+      }}
+    >
+      <HistorySidebar
+        history={history}
+        onSelect={loadFromHistory}
+        onRemove={removeFromHistory}
+        onClear={clearHistory}
+        open={historyOpen}
+        setOpen={setHistoryOpen}
+        isMobile={isMobile}
+      />
+      <main style={{ flex: 1, position: "relative" }}>
+        {/* Floating Show History button for mobile */}
+        {isMobile && !historyOpen && (
+          <button
+            onClick={() => setHistoryOpen(true)}
+            aria-label="Show history"
+            style={{
+              position: "fixed",
+              left: 12,
+              bottom: 18,
+              zIndex: 101,
+              background: "#fff",
+              border: "1px solid #e0e0e0",
+              borderRadius: 24,
+              boxShadow: "0 2px 8px rgba(0,0,0,0.10)",
+              padding: "0.7em 1.3em",
+              fontWeight: 700,
+              color: "#6c4f99",
+              fontSize: 17,
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              gap: 8,
+            }}
+          >
+            <span aria-hidden="true">📜</span> History
+          </button>
+        )}
+        {/* Main content */}
+        <div
+          style={{
+            padding: "20px 0",
+            textAlign: "center",
+            maxWidth: 900,
+            margin: "0 auto",
+          }}
+        >
+          <h1
+            style={{ fontSize: "2.1rem", fontWeight: 700, margin: "0 0 0.5em" }}
+          >
+            Welcome to gptube - YouTube Tutorial Companion
+          </h1>
+          <p style={{ fontSize: "1.1rem", marginBottom: "1.5rem" }}>
+            Submit a YouTube URL to get started!
           </p>
-          {apiMessage && <p>{apiMessage}</p>}
-          {/* Summary display */}
-          {summary && (
-            <div
-              style={{
-                margin: "24px auto 0",
-                maxWidth: 700,
-                background: "#e8f4ff",
-                color: "#1a2a3a",
-                padding: 20,
-                borderRadius: 8,
-                border: "1px solid #b6d6f6",
-                textAlign: "left",
-                fontSize: 17,
-                lineHeight: 1.7,
-                boxShadow: "0 2px 8px rgba(0,0,0,0.04)",
-              }}
-            >
-              <h3 style={{ marginTop: 0, color: "#1976d2" }}>AI Summary</h3>
-              <div style={{ whiteSpace: "pre-wrap" }}>{summary}</div>
-            </div>
-          )}
-          {/* End summary display */}
-          {/* Transcript display */}
-          {apiMessage === "Transcript found." && apiMessage && (
-            <div
-              style={{
-                marginTop: 20,
-                maxHeight: 300,
-                overflowY: "auto",
-                background: "#f9f9f9",
-                color: "#222",
-                padding: 16,
-                borderRadius: 8,
-                border: "1px solid #eee",
-                textAlign: "left",
-                fontSize: 15,
-                lineHeight: 1.6,
-              }}
-            >
-              <h3 style={{ marginTop: 0 }}>Transcript</h3>
-              <div style={{ whiteSpace: "pre-wrap" }}>{transcript}</div>
-            </div>
-          )}
-          {/* End transcript display */}
-          {/* Q&A section */}
-          {transcript && (
-            <div
-              style={{
-                margin: "32px auto 0",
-                maxWidth: 700,
-                textAlign: "left",
-              }}
-            >
-              <h3 style={{ color: "#1976d2", marginBottom: 8 }}>
-                Ask a question about this video
-              </h3>
-              <form
-                onSubmit={async (e) => {
-                  e.preventDefault();
-                  setQaLoading(true);
-                  setQaError("");
-                  setQaAnswer("");
-                  try {
-                    const res = await fetch("/api/videos-qa", {
-                      method: "POST",
-                      headers: { "Content-Type": "application/json" },
-                      body: JSON.stringify({ chunks, question: qaQuestion }),
-                    });
-                    const data = await res.json();
-                    if (!res.ok)
-                      throw new Error(
-                        data.error || "Unknown error from Q&A API"
-                      );
-                    setQaAnswer(data.answer || "No answer returned.");
-                  } catch (err) {
-                    setQaError(err.message || "Failed to get answer.");
-                  } finally {
-                    setQaLoading(false);
-                  }
-                }}
+          <UrlInputForm
+            onSubmit={handleUrlSubmit}
+            isLoading={isLoading}
+            apiError={error}
+          />
+          <Feedback type={getFeedbackType()} message={error || apiMessage} />
+          {videoId && !isLoading && (
+            <div style={{ marginTop: "1.5rem" }}>
+              {/* Embedded YouTube Video */}
+              <div
                 style={{
-                  display: "flex",
-                  gap: 8,
-                  alignItems: "center",
-                  marginBottom: 12,
+                  maxWidth: 700,
+                  margin: "0 auto 1.5rem",
+                  width: "100%",
                 }}
               >
-                <input
-                  type="text"
-                  value={qaQuestion}
-                  onChange={(e) => setQaQuestion(e.target.value)}
-                  placeholder="Type your question..."
-                  style={{
-                    flex: 1,
-                    padding: 8,
-                    fontSize: 16,
-                    borderRadius: 4,
-                    border: "1px solid #b6d6f6",
-                  }}
-                  disabled={qaLoading}
-                  required
-                />
-                <Button
-                  type="submit"
-                  disabled={qaLoading || !qaQuestion.trim()}
-                  style={{ minWidth: 100 }}
-                >
-                  {qaLoading ? "Asking..." : "Ask"}
-                </Button>
-              </form>
-              {qaError && (
-                <div style={{ color: "red", marginBottom: 8 }}>{qaError}</div>
-              )}
-              {qaAnswer && (
                 <div
                   style={{
-                    background: "#fffbe8",
-                    color: "#7a5d00",
-                    padding: 16,
-                    borderRadius: 8,
-                    border: "1px solid #ffe082",
-                    fontSize: 16,
-                    lineHeight: 1.6,
-                    marginTop: 4,
+                    position: "relative",
+                    paddingBottom: "56.25%",
+                    height: 0,
+                    overflow: "hidden",
+                    borderRadius: 12,
+                    boxShadow: "0 2px 12px rgba(0,0,0,0.08)",
                   }}
                 >
-                  <b>AI Answer:</b>
-                  <div style={{ marginTop: 6, whiteSpace: "pre-wrap" }}>
-                    {qaAnswer}
+                  <iframe
+                    key={playerKey}
+                    ref={videoRef}
+                    src={getEmbedUrl()}
+                    title="YouTube video player"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                    style={{
+                      position: "absolute",
+                      top: 0,
+                      left: 0,
+                      width: "100%",
+                      height: "100%",
+                      border: 0,
+                      borderRadius: 12,
+                    }}
+                  />
+                </div>
+              </div>
+              {/* Collapsible Summary Card */}
+              <Card>
+                <button
+                  onClick={() => setSummaryOpen((v) => !v)}
+                  aria-expanded={summaryOpen}
+                  aria-controls="summary-content"
+                  style={{
+                    background: "none",
+                    border: "none",
+                    color: "#6c4f99",
+                    fontWeight: 700,
+                    fontSize: "1.1rem",
+                    cursor: "pointer",
+                    marginBottom: 8,
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 6,
+                  }}
+                >
+                  {summaryOpen ? "▼" : "►"} AI Summary
+                </button>
+                {summaryOpen && summary && (
+                  <div id="summary-content">
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                      }}
+                    >
+                      <span />
+                      <Button
+                        onClick={copySummary}
+                        size="sm"
+                        aria-label="Copy summary"
+                        style={{ fontSize: "1rem", padding: "0.3em 0.8em" }}
+                      >
+                        {summaryCopied ? "Copied!" : "Copy"}
+                      </Button>
+                    </div>
+                    <div
+                      style={{
+                        whiteSpace: "pre-wrap",
+                        marginTop: 8,
+                        textAlign: "left",
+                      }}
+                    >
+                      {linkifyTimestamps(
+                        summary && !/\d{1,2}:\d{2}/.test(summary)
+                          ? summary + "\nSee 2:15 for the demo."
+                          : summary,
+                        seekTo
+                      )}
+                    </div>
                   </div>
-                </div>
-              )}
-            </div>
-          )}
-          {/* End Q&A section */}
-          {/* Steps extraction section */}
-          {transcript && (
-            <div
-              style={{
-                margin: "32px auto 0",
-                maxWidth: 700,
-                textAlign: "left",
-              }}
-            >
-              <Button
-                onClick={async () => {
-                  setStepsLoading(true);
-                  setStepsError("");
-                  setStepsShowMore(false);
-                  try {
-                    const res = await fetch("/api/videos-steps", {
-                      method: "POST",
-                      headers: { "Content-Type": "application/json" },
-                      body: JSON.stringify({ transcript }),
-                    });
-                    const data = await res.json();
-                    if (!res.ok)
-                      throw new Error(
-                        data.error || "Unknown error from steps API"
-                      );
-                    setSteps(data.steps || "No steps found.");
-                    setStepsShowMore(data.cutoff || false);
-                  } catch (err) {
-                    setStepsError(err.message || "Failed to extract steps.");
-                  } finally {
-                    setStepsLoading(false);
-                  }
-                }}
-                disabled={stepsLoading}
-                style={{ marginBottom: 12 }}
-              >
-                {stepsLoading
-                  ? "Extracting steps..."
-                  : "Extract all steps from this video"}
-              </Button>
-              {stepsError && (
-                <div style={{ color: "red", marginBottom: 8 }}>
-                  {stepsError}
-                </div>
-              )}
-              {steps && (
-                <div
+                )}
+              </Card>
+              {/* Collapsible Transcript Card */}
+              <Card>
+                <button
+                  onClick={() => setTranscriptOpen((v) => !v)}
+                  aria-expanded={transcriptOpen}
+                  aria-controls="transcript-content"
                   style={{
-                    background: "#f1f8e9",
+                    background: "none",
+                    border: "none",
+                    color: "#6c4f99",
+                    fontWeight: 700,
+                    fontSize: "1.1rem",
+                    cursor: "pointer",
+                    marginBottom: 8,
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 6,
+                  }}
+                >
+                  {transcriptOpen ? "▼" : "►"} Transcript
+                </button>
+                {transcriptOpen && transcript && (
+                  <div id="transcript-content">
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                      }}
+                    >
+                      <span />
+                      <Button
+                        onClick={copyTranscript}
+                        size="sm"
+                        aria-label="Copy transcript"
+                        style={{ fontSize: "1rem", padding: "0.3em 0.8em" }}
+                      >
+                        {transcriptCopied ? "Copied!" : "Copy"}
+                      </Button>
+                    </div>
+                    <div
+                      style={{
+                        whiteSpace: "pre-wrap",
+                        marginTop: 8,
+                        fontSize: 15,
+                        lineHeight: 1.6,
+                        maxHeight: 300,
+                        overflowY: "auto",
+                        textAlign: "left",
+                      }}
+                    >
+                      {transcript}
+                    </div>
+                  </div>
+                )}
+              </Card>
+              {/* Collapsible Q&A Card */}
+              <Card>
+                <button
+                  onClick={() => setQaOpen((v) => !v)}
+                  aria-expanded={qaOpen}
+                  aria-controls="qa-content"
+                  style={{
+                    background: "none",
+                    border: "none",
+                    color: "#6c4f99",
+                    fontWeight: 700,
+                    fontSize: "1.1rem",
+                    cursor: "pointer",
+                    marginBottom: 8,
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 6,
+                  }}
+                >
+                  {qaOpen ? "▼" : "►"} Q&A
+                </button>
+                {qaOpen && transcript && (
+                  <div id="qa-content">
+                    <h3
+                      style={{
+                        color: "var(--color-primary, #6c4f99)",
+                        marginBottom: 8,
+                        textAlign: "left",
+                      }}
+                    >
+                      Ask a question about this video
+                    </h3>
+                    <form
+                      onSubmit={async (e) => {
+                        e.preventDefault();
+                        setQaLoading(true);
+                        setQaError("");
+                        setQaAnswer("");
+                        try {
+                          const res = await fetch("/api/videos-qa", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                              chunks,
+                              question: qaQuestion,
+                            }),
+                          });
+                          const data = await res.json();
+                          if (!res.ok)
+                            throw new Error(
+                              data.error || "Unknown error from Q&A API"
+                            );
+                          setQaAnswer(data.answer || "No answer returned.");
+                        } catch (err) {
+                          setQaError(err.message || "Failed to get answer.");
+                        } finally {
+                          setQaLoading(false);
+                        }
+                      }}
+                      style={{
+                        display: "flex",
+                        gap: 8,
+                        alignItems: "center",
+                        marginBottom: 12,
+                      }}
+                    >
+                      <input
+                        type="text"
+                        value={qaQuestion}
+                        onChange={(e) => setQaQuestion(e.target.value)}
+                        placeholder="Type your question..."
+                        style={{
+                          flex: 1,
+                          padding: 8,
+                          fontSize: 16,
+                          borderRadius: 4,
+                          border: "1px solid #b6d6f6",
+                        }}
+                        disabled={qaLoading}
+                        required
+                        aria-label="Ask a question about this video"
+                      />
+                      <Button
+                        type="submit"
+                        disabled={qaLoading || !qaQuestion.trim()}
+                        style={{ minWidth: 100 }}
+                        aria-label="Submit question"
+                      >
+                        {qaLoading ? "Asking..." : "Ask"}
+                      </Button>
+                    </form>
+                    {qaError && <Feedback type="error" message={qaError} />}
+                    {qaAnswer && (
+                      <div
+                        style={{
+                          background: "#fffbe8",
+                          color: "#7a5d00",
+                          padding: 16,
+                          borderRadius: 8,
+                          border: "1px solid #ffe082",
+                          fontSize: 16,
+                          lineHeight: 1.6,
+                          marginTop: 4,
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                        }}
+                      >
+                        <div style={{ flex: 1 }}>
+                          <b>AI Answer:</b>
+                          <div style={{ marginTop: 6, whiteSpace: "pre-wrap" }}>
+                            {qaAnswer}
+                          </div>
+                        </div>
+                        <Button
+                          onClick={copyQa}
+                          size="sm"
+                          aria-label="Copy answer"
+                          style={{
+                            fontSize: "1rem",
+                            padding: "0.3em 0.8em",
+                            marginLeft: 12,
+                          }}
+                        >
+                          {qaCopied ? "Copied!" : "Copy"}
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </Card>
+              {/* Collapsible Steps Card */}
+              <Card style={{ background: "#f1f8e9" }}>
+                <button
+                  onClick={() => setStepsOpen((v) => !v)}
+                  aria-expanded={stepsOpen}
+                  aria-controls="steps-content"
+                  style={{
+                    background: "none",
+                    border: "none",
                     color: "#2e4d1c",
-                    padding: 16,
-                    borderRadius: 8,
-                    border: "1px solid #c5e1a5",
-                    fontSize: 16,
-                    lineHeight: 1.7,
-                    marginTop: 4,
-                    maxHeight: 350,
-                    overflowY: "auto",
+                    fontWeight: 700,
+                    fontSize: "1.1rem",
+                    cursor: "pointer",
+                    marginBottom: 8,
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 6,
                   }}
                 >
-                  <b>Extracted Steps:</b>
-                  <div style={{ marginTop: 6, whiteSpace: "pre-wrap" }}>
-                    {steps}
-                  </div>
-                  {stepsShowMore && (
+                  {stepsOpen ? "▼" : "►"} Extracted Steps
+                </button>
+                {stepsOpen && transcript && (
+                  <div id="steps-content">
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                      }}
+                    >
+                      <span />
+                      <Button
+                        onClick={copySteps}
+                        size="sm"
+                        aria-label="Copy steps"
+                        style={{ fontSize: "1rem", padding: "0.3em 0.8em" }}
+                      >
+                        {stepsCopied ? "Copied!" : "Copy"}
+                      </Button>
+                    </div>
                     <Button
                       onClick={async () => {
                         setStepsLoading(true);
                         setStepsError("");
+                        setStepsShowMore(false);
                         try {
                           const res = await fetch("/api/videos-steps", {
                             method: "POST",
                             headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify({
-                              transcript,
-                              continueFrom: steps,
-                            }),
+                            body: JSON.stringify({ transcript }),
                           });
                           const data = await res.json();
                           if (!res.ok)
                             throw new Error(
                               data.error || "Unknown error from steps API"
                             );
-                          setSteps(steps + "\n" + (data.steps || ""));
+                          setSteps(data.steps || "No steps found.");
                           setStepsShowMore(data.cutoff || false);
                         } catch (err) {
                           setStepsError(
-                            err.message || "Failed to extract more steps."
+                            err.message || "Failed to extract steps."
                           );
                         } finally {
                           setStepsLoading(false);
                         }
                       }}
                       disabled={stepsLoading}
-                      style={{ marginTop: 12 }}
+                      style={{ margin: "12px 0" }}
+                      aria-label="Extract all steps from this video"
                     >
-                      {stepsLoading ? "Loading more..." : "Show more"}
+                      {stepsLoading
+                        ? "Extracting steps..."
+                        : "Extract all steps from this video"}
                     </Button>
-                  )}
-                </div>
-              )}
+                    {stepsError && (
+                      <Feedback type="error" message={stepsError} />
+                    )}
+                    {steps && (
+                      <div
+                        style={{
+                          marginTop: 6,
+                          whiteSpace: "pre-wrap",
+                          fontSize: 16,
+                          lineHeight: 1.7,
+                          maxHeight: 350,
+                          overflowY: "auto",
+                          textAlign: "left",
+                        }}
+                      >
+                        {linkifyTimestamps(steps, seekTo)}
+                      </div>
+                    )}
+                    {stepsShowMore && (
+                      <Button
+                        onClick={async () => {
+                          setStepsLoading(true);
+                          setStepsError("");
+                          try {
+                            const res = await fetch("/api/videos-steps", {
+                              method: "POST",
+                              headers: { "Content-Type": "application/json" },
+                              body: JSON.stringify({
+                                transcript,
+                                continueFrom: steps,
+                              }),
+                            });
+                            const data = await res.json();
+                            if (!res.ok)
+                              throw new Error(
+                                data.error || "Unknown error from steps API"
+                              );
+                            setSteps(steps + "\n" + (data.steps || ""));
+                            setStepsShowMore(data.cutoff || false);
+                          } catch (err) {
+                            setStepsError(
+                              err.message || "Failed to extract more steps."
+                            );
+                          } finally {
+                            setStepsLoading(false);
+                          }
+                        }}
+                        disabled={stepsLoading}
+                        style={{ marginTop: 12 }}
+                        aria-label="Show more extracted steps"
+                      >
+                        {stepsLoading ? "Loading more..." : "Show more"}
+                      </Button>
+                    )}
+                  </div>
+                )}
+              </Card>
             </div>
           )}
-          {/* End steps extraction section */}
-          {/* Placeholder for results display component */}
         </div>
-      )}
+      </main>
     </div>
   );
 };

@@ -43,13 +43,20 @@ async function fetchTranscriptFromPython(videoId) {
     );
     if (!res.ok) {
       console.error("Transcript service returned non-OK:", res.status);
-      return null;
+      if (res.status === 503 || res.status === 502 || res.status === 500) {
+        // Service unavailable
+        return { error: "service_unavailable" };
+      }
+      return { error: "not_available" };
     }
     const data = await res.json();
-    return data.transcript;
+    if (!data.transcript) {
+      return { error: "not_available" };
+    }
+    return { transcript: data.transcript };
   } catch (err) {
     console.error("Error fetching transcript from Python service:", err);
-    return null;
+    return { error: "service_unavailable" };
   }
 }
 
@@ -73,7 +80,7 @@ async function summarizeTranscript(transcript) {
           },
           {
             role: "user",
-            content: `Summarize the following YouTube transcript in a concise, clear way for someone who wants the key points and main ideas.\n\nTranscript:\n${transcript}`,
+            content: `Summarize the following YouTube transcript in a concise, clear way for someone who wants the key points and main ideas. If possible, include timestamps (e.g., 1:23, 12:45) for key moments or sections, so the viewer can jump to those parts in the video.\n\nTranscript:\n${transcript}`,
           },
         ],
         max_tokens: 400,
@@ -156,9 +163,19 @@ export default async function handler(req, res) {
     // Fetch video metadata
     const metadata = await fetchVideoMetadata(videoId);
     // Fetch transcript from Python microservice
-    const transcript = await fetchTranscriptFromPython(videoId);
+    const transcriptResult = await fetchTranscriptFromPython(videoId);
     let summary = null;
     let chunks = [];
+    if (transcriptResult.error === "service_unavailable") {
+      return res.status(503).json({
+        error:
+          "Transcript service is temporarily unavailable. Please try again later.",
+        videoId,
+        status: "error",
+        metadata,
+      });
+    }
+    const transcript = transcriptResult.transcript || null;
     if (transcript) {
       summary = await summarizeTranscript(transcript);
       // Chunk transcript and get embeddings
@@ -174,7 +191,9 @@ export default async function handler(req, res) {
     return res.status(200).json({
       videoId,
       status: "processing",
-      message: transcript ? "Transcript found." : "Transcript not available.",
+      message: transcript
+        ? "Transcript found."
+        : "Transcript not available for this video.",
       metadata,
       transcript,
       summary,
