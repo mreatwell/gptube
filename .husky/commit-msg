@@ -1,0 +1,12 @@
+#!/usr/bin/env sh
+echo "Running commit-msg hook: commitlint..."
+npx commitlint --edit "$1"
+
+EXIT_CODE=$?
+if [ $EXIT_CODE -ne 0 ]; then
+  echo "Commit-msg hook failed (commitlint). Please format commit message correctly (e.g., feat: add new feature)."
+  exit $EXIT_CODE
+fi
+
+echo "Commit-msg hook passed."
+exit 0 

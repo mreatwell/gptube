@@ -1,0 +1,59 @@
+{
+  "name": "gptube",
+  "version": "0.1.0",
+  "private": true,
+  "description": "The YouTube Tutorial Companion is a web application designed to transform YouTube video tutorials into structured, actionable guides. It allows users to input a YouTube video URL and receive a transcript, AI-generated summary, step-by-step instructions, and clarifications.",
+  "main": "src/pages/index.js",
+  "directories": {
+    "doc": "docs",
+    "test": "tests"
+  },
+  "scripts": {
+    "dev": "next dev -p 4000",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "format": "prettier --write ./**/*.{js,jsx,ts,tsx,json,css,md,mjs}",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepare": "husky"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mreatwell/gptube.git"
+  },
+  "keywords": [],
+  "author": "mreatwell",
+  "license": "MIT",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/mreatwell/gptube/issues"
+  },
+  "homepage": "https://github.com/mreatwell/gptube#readme",
+  "dependencies": {
+    "firebase": "^11.7.1",
+    "firebase-admin": "^13.3.0",
+    "next": "^15.3.2",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0"
+  },
+  "devDependencies": {
+    "@commitlint/config-conventional": "^19.8.1",
+    "commitlint": "^19.8.1",
+    "eslint": "^9.26.0",
+    "eslint-config-next": "^15.3.2",
+    "eslint-config-prettier": "^10.1.3",
+    "eslint-plugin-prettier": "^5.4.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^15.5.2",
+    "prettier": "^3.5.3"
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,css,md}": [
+      "prettier --write"
+    ]
+  }
+}

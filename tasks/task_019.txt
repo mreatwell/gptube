@@ -1,0 +1,230 @@
+# Task ID: 19
+# Title: Implement Interactive Q&A Section with User-Friendly Interface
+# Status: pending
+# Dependencies: None
+# Priority: medium
+# Description: Develop a responsive Q&A component for the gptube MVP that allows users to ask questions and receive AI-generated answers with appropriate feedback mechanisms.
+# Details:
+Create a Q&A section with the following components:
+
+1. Question input field:
+   - Implement a text input with descriptive placeholder (e.g., 'Ask a question about this video...')
+   - Ensure proper sizing and touch target areas for mobile devices
+   - Support multiline input with appropriate height constraints
+   - Add focus/blur states with accessible styling
+
+2. Ask button:
+   - Implement conditional logic to disable the button when input is empty or during loading state
+   - Use visual indicators for disabled/enabled states
+   - Include appropriate hover/active states
+   - Ensure proper spacing from input field
+
+3. Loading indicator:
+   - Create a non-intrusive loading animation that appears while waiting for AI response
+   - Ensure animation is lightweight and doesn't impact performance
+   - Add appropriate ARIA attributes for accessibility
+
+4. Answer display:
+   - Design a visually distinct container for AI responses
+   - Support markdown or rich text formatting if needed
+   - Ensure text is properly sized and readable on all devices
+   - Implement proper overflow handling for long responses
+
+5. Error handling:
+   - Create user-friendly error messages for different failure scenarios
+   - Provide retry options when appropriate
+   - Ensure errors are descriptive but not technical
+
+6. Copy functionality:
+   - Add a copy-to-clipboard button with appropriate icon
+   - Implement success/failure feedback for copy action
+   - Ensure copied text maintains formatting
+
+All components should follow accessibility guidelines (WCAG 2.1 AA), including proper contrast ratios, keyboard navigation, and screen reader support. Use semantic HTML elements and appropriate ARIA attributes where needed.
+
+# Test Strategy:
+Testing should cover functionality, usability, and edge cases:
+
+1. Functional testing:
+   - Verify input field accepts text and properly handles different character lengths
+   - Confirm Ask button is disabled when input is empty and during loading
+   - Test that loading indicator appears and disappears at appropriate times
+   - Verify AI responses display correctly with various content lengths
+   - Confirm error messages appear for different error scenarios (network issues, AI service unavailable, etc.)
+   - Test copy functionality works across different browsers
+
+2. Responsive testing:
+   - Test on multiple device sizes (320px, 768px, 1024px, 1440px widths)
+   - Verify touch targets are at least 44x44px on mobile
+   - Ensure no horizontal scrolling occurs on small screens
+   - Check that text remains readable at all viewport sizes
+
+3. Accessibility testing:
+   - Verify all interactive elements are keyboard accessible
+   - Test with screen readers (NVDA, VoiceOver) to ensure proper announcements
+   - Check color contrast meets WCAG AA standards (4.5:1 for normal text)
+   - Verify focus states are visible and clear
+
+4. Performance testing:
+   - Measure and optimize component render time
+   - Ensure animations don't cause layout shifts
+   - Test on low-end devices to verify acceptable performance
+
+5. Edge cases:
+   - Test with extremely long questions and answers
+   - Verify behavior when network is intermittent
+   - Test rapid consecutive question submissions
+
+# Subtasks:
+## 1. Implement Question Input Field with Responsive Design [pending]
+### Dependencies: None
+### Description: Create a responsive text input component that allows users to enter questions with proper styling and accessibility features.
+### Details:
+Implementation details:
+1. Create a form component with a textarea element for question input
+2. Add descriptive placeholder text ('Ask a question about this video...')
+3. Implement responsive sizing with appropriate padding and margins
+4. Set up min/max height constraints with auto-expansion for multiline input
+5. Add focus/blur states with visual indicators (border color change, subtle shadow)
+6. Implement proper touch target areas (min 44x44px) for mobile devices
+7. Add appropriate ARIA attributes (aria-label, aria-required)
+8. Implement form validation to check for empty input
+9. Add event handlers for input changes to track question text
+10. Style the component according to design system guidelines
+
+Testing approach:
+- Test responsiveness across different screen sizes
+- Verify keyboard accessibility (tab navigation, enter submission)
+- Test with screen readers to ensure proper announcements
+- Validate touch target size on mobile devices
+- Test auto-expansion with varying text lengths
+
+## 2. Create Ask Button with State Management [pending]
+### Dependencies: 19.1
+### Description: Implement an interactive button component that handles different states (enabled, disabled, loading) with appropriate visual feedback.
+### Details:
+Implementation details:
+1. Create a button component with appropriate text ('Ask' or similar)
+2. Implement conditional rendering logic to disable the button when:
+   - Input field is empty
+   - System is in loading state waiting for AI response
+3. Add visual styling for different states:
+   - Default state with brand colors
+   - Hover state with slight color change
+   - Active/pressed state with inset effect
+   - Disabled state with muted colors and cursor:not-allowed
+4. Ensure proper spacing from input field (consistent margin)
+5. Add appropriate ARIA attributes (aria-disabled when applicable)
+6. Implement click handler to trigger question submission
+7. Add keyboard event listeners for accessibility (Enter key submission)
+
+Testing approach:
+- Verify button state changes correctly based on input field content
+- Test hover, focus, and active states visually
+- Confirm disabled state prevents submission
+- Test keyboard accessibility (Enter key and Space bar activation)
+- Verify proper touch behavior on mobile devices
+
+## 3. Develop Loading Indicator and API Integration [pending]
+### Dependencies: 19.1, 19.2
+### Description: Create a loading animation component and integrate with the backend API to handle question submission and response retrieval.
+### Details:
+Implementation details:
+1. Design a lightweight loading animation (spinner, pulsing dots, etc.)
+2. Implement conditional rendering to show/hide the loader based on request state
+3. Add appropriate ARIA attributes (aria-live="polite", role="status")
+4. Create API service function to submit questions to the backend
+5. Implement error handling for network failures and timeout scenarios
+6. Set up state management to track loading status (idle, loading, success, error)
+7. Add debounce mechanism to prevent multiple rapid submissions
+8. Implement request cancellation for abandoned requests
+9. Create timeout handling for long-running requests
+10. Add analytics tracking for question submissions (if applicable)
+
+Testing approach:
+- Test loading indicator visibility during API calls
+- Verify animation performance on low-end devices
+- Test API integration with mock responses
+- Verify error handling for different failure scenarios
+- Test request cancellation and timeout behavior
+
+## 4. Build Answer Display Component with Formatting Support [pending]
+### Dependencies: 19.3
+### Description: Create a component to display AI-generated answers with proper formatting, styling, and overflow handling.
+### Details:
+Implementation details:
+1. Create a container component with distinct styling for AI responses
+2. Implement support for markdown or rich text formatting:
+   - Convert markdown to HTML or use a markdown rendering library
+   - Apply appropriate styling to formatted elements (headings, lists, code blocks)
+3. Ensure proper text sizing and line height for readability
+4. Implement responsive width constraints based on device size
+5. Add proper padding and margins for visual separation
+6. Implement overflow handling for long responses:
+   - Max height with scrolling for very long answers
+   - Text wrapping for long words/URLs
+7. Add subtle animations for answer appearance (fade in, slide in)
+8. Implement proper semantic HTML structure (article, headings, paragraphs)
+9. Add appropriate ARIA attributes for accessibility
+
+Testing approach:
+- Test rendering of various markdown/formatting elements
+- Verify overflow behavior with extremely long responses
+- Test responsiveness across different screen sizes
+- Verify screen reader compatibility
+- Test with different font size settings (browser/OS settings)
+
+## 5. Implement Error Handling and User Feedback [pending]
+### Dependencies: 19.3, 19.4
+### Description: Create comprehensive error handling with user-friendly error messages and appropriate recovery options.
+### Details:
+Implementation details:
+1. Design error message components with clear, non-technical language
+2. Implement different error states for various scenarios:
+   - Network connectivity issues
+   - Server errors (500 responses)
+   - Rate limiting or quota exceeded
+   - Invalid input or content policy violations
+3. Add retry functionality where appropriate
+4. Implement toast/snackbar notifications for transient errors
+5. Add inline error messages for input validation issues
+6. Create fallback content for when answers cannot be generated
+7. Implement logging for error tracking (client-side or to backend)
+8. Add appropriate ARIA attributes for error announcements
+9. Ensure error messages have sufficient color contrast
+10. Implement error boundary to prevent component tree crashes
+
+Testing approach:
+- Test each error scenario with mocked API responses
+- Verify retry functionality works correctly
+- Test screen reader announcements for errors
+- Verify error messages are clear and actionable
+- Test error boundary recovery
+
+## 6. Add Copy-to-Clipboard Functionality with Success Feedback [pending]
+### Dependencies: 19.4
+### Description: Implement a copy button that allows users to easily copy AI responses to their clipboard with appropriate feedback.
+### Details:
+Implementation details:
+1. Create a copy button component with appropriate icon
+2. Position the button appropriately within the answer display component
+3. Implement clipboard API integration:
+   - Use navigator.clipboard.writeText() with fallbacks for older browsers
+   - Handle permissions appropriately
+4. Add visual feedback for copy actions:
+   - Success state (checkmark or success message)
+   - Error state if copy fails
+5. Implement temporary state change to indicate successful copy
+6. Add tooltip or aria-label to explain button purpose
+7. Ensure copied text maintains formatting where possible
+8. Add keyboard shortcut support (optional)
+9. Implement analytics tracking for copy actions (if applicable)
+10. Ensure the button has appropriate hover/focus states
+
+Testing approach:
+- Test copy functionality across different browsers
+- Verify success/error feedback is clear and temporary
+- Test keyboard accessibility for the copy button
+- Verify copied text maintains proper formatting
+- Test with screen readers to ensure proper announcements
+

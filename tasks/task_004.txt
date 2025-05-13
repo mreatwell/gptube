@@ -1,0 +1,31 @@
+# Task ID: 4
+# Title: API Architecture Design
+# Status: done
+# Dependencies: 3
+# Priority: high
+# Description: Define the API architecture and endpoints for the application
+# Details:
+Design RESTful API endpoints, document request/response formats, authentication mechanisms, and error handling strategies. Create an API specification document using OpenAPI/Swagger
+
+# Test Strategy:
+Review API design with team members to ensure it meets all functional requirements and follows RESTful principles
+
+# Subtasks:
+## 4.1. Design RESTful API endpoints for MVP [completed]
+### Dependencies: None
+### Description: Designed core endpoints: POST /api/videos (submit URL), GET /api/videos/{videoId} (get status/results), POST /api/videos/{videoId}/chat (chat query)
+### Details:
+
+
+## 4.2. Document request/response formats and error handling [completed]
+### Dependencies: None
+### Description: Outlined request/response formats and error handling strategy for all API endpoints
+### Details:
+
+
+## 4.3. Create OpenAPI specification [completed]
+### Dependencies: None
+### Description: Created OpenAPI specification document in docs/api-spec.yaml
+### Details:
+
+

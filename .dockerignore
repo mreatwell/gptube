@@ -1,0 +1,55 @@
+# .dockerignore
+
+# Git files
+.git
+.gitignore
+.gitattributes
+
+# Node modules (these will be installed inside the container)
+node_modules
+
+# Husky files
+.husky
+
+# VSCode settings
+.vscode
+
+# Next.js build cache and local development files
+.next
+
+# Docker files themselves
+Dockerfile
+.dockerignore
+docker-compose.yml
+
+# Task Master files (if not needed in production image)
+tasks/
+scripts/task-complexity-report.json
+# scripts/prd.txt # If you have other script files you want to ignore
+
+# Environment files (should be passed as environment variables or secrets)
+.env
+.env*.local
+.env.development
+.env.production
+
+# Test files (if not needed in production image)
+tests/
+
+# Operating System files
+.DS_Store
+Thumbs.db
+
+# Log files
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Editor directories and files
+.idea
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw? 

@@ -1,0 +1,15 @@
+node_modules
+.next
+out
+build
+coverage
+
+# Ignore files from .gitignore that might not be covered by above
+*.log
+.env
+.env.*
+!.env.example
+
+# Task Master specific files (if not linted/formatted)
+scripts/task-complexity-report.json
+tasks/tasks.json 

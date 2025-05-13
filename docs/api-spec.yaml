@@ -1,0 +1,217 @@
+openapi: 3.0.0
+info:
+  title: gptube - YouTube Tutorial Companion API (MVP)
+  version: 0.1.0
+  description: API for submitting YouTube URLs, retrieving processed content (transcript, summary, steps), and interacting with a contextual chatbot.
+
+servers:
+  - url: /api # Base path assuming Firebase Functions rewrite or Next.js API routes
+    description: Development server
+
+paths:
+  /videos:
+    post:
+      summary: Submit a YouTube URL for processing
+      operationId: submitVideoUrl
+      tags:
+        - Videos
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                youtubeUrl:
+                  type: string
+                  format: url
+                  description: The full URL of the YouTube video.
+                  example: https://www.youtube.com/watch?v=dQw4w9WgXcQ
+              required:
+                - youtubeUrl
+      responses:
+        '202':
+          description: Accepted for processing. Check status using GET /videos/{videoId}.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  videoId:
+                    type: string
+                    description: The extracted YouTube Video ID.
+                    example: dQw4w9WgXcQ
+                  status:
+                    type: string
+                    enum: [queued, processing]
+                    description: Initial status of the processing job.
+                    example: queued
+        '400':
+          description: Bad Request (e.g., invalid URL format)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /videos/{videoId}:
+    get:
+      summary: Get processing status and results for a video
+      operationId: getVideoStatusAndResults
+      tags:
+        - Videos
+      parameters:
+        - name: videoId
+          in: path
+          required: true
+          description: The YouTube Video ID.
+          schema:
+            type: string
+          example: dQw4w9WgXcQ
+      responses:
+        '200':
+          description: Successfully retrieved video status and/or results.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VideoProcessingResult'
+        '404':
+          description: Not Found (Video ID not found)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /videos/{videoId}/chat:
+    post:
+      summary: Send a query to the chatbot for a specific video
+      operationId: chatWithVideoContext
+      tags:
+        - Chat
+      parameters:
+        - name: videoId
+          in: path
+          required: true
+          description: The YouTube Video ID for context.
+          schema:
+            type: string
+          example: dQw4w9WgXcQ
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+                  description: The user's question about the video.
+                  example: "What was the first step mentioned?"
+              required:
+                - query
+      responses:
+        '200':
+          description: Successfully received chatbot response.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  response:
+                    type: string
+                    description: The AI-generated response.
+                    example: "The first step mentioned was to gather the ingredients."
+        '400':
+          description: Bad Request (e.g., missing query)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Not Found (Video ID not processed or context unavailable)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal Server Error (e.g., AI model error)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+components:
+  schemas:
+    VideoProcessingResult:
+      type: object
+      properties:
+        videoId:
+          type: string
+          description: The YouTube Video ID.
+          example: dQw4w9WgXcQ
+        status:
+          type: string
+          enum: [queued, processing, completed, failed]
+          description: Current status of the processing job.
+          example: completed
+        youtubeUrl:
+          type: string
+          format: url
+          description: The original YouTube URL submitted.
+          example: https://www.youtube.com/watch?v=dQw4w9WgXcQ
+        transcriptOriginal:
+          type: string
+          description: The full transcript (present if status is 'completed').
+          nullable: true
+        summaryAI:
+          type: string
+          description: AI-generated summary (present if status is 'completed').
+          nullable: true
+        stepsAI:
+          type: array
+          items:
+            type: string # or object, TBD
+          description: AI-generated steps (present if status is 'completed').
+          nullable: true
+        clarificationsAI:
+          type: array
+          items:
+            type: string # or object, TBD
+          description: AI-generated clarifications (present if status is 'completed').
+          nullable: true
+        processedAt:
+          type: string
+          format: date-time
+          description: Timestamp when processing finished or failed.
+          nullable: true
+        errorMessage:
+          type: string
+          description: Error message if status is 'failed'.
+          nullable: true
+
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+          description: A description of the error.
+          example: Invalid YouTube URL format.
+      required:
+        - error
+
+tags:
+  - name: Videos
+    description: Operations related to video processing and retrieval.
+  - name: Chat
+    description: Operations related to the contextual chatbot. 
