@@ -294,6 +294,69 @@ const exportText = (text, filename) => {
   }, 0);
 };
 
+// Component to display links from the transcript
+const LinksCard = ({ links = [], title = "Links from Video" }) => {
+  if (!links || links.length === 0) return null;
+
+  // Display hostname for better readability
+  const getDisplayUrl = (url) => {
+    try {
+      const urlObj = new URL(url);
+      return `${urlObj.hostname}${urlObj.pathname.replace(/\/$/, "")}`;
+    } catch {
+      return url;
+    }
+  };
+
+  return (
+    <Card style={{ marginTop: "1rem" }}>
+      <h3 style={{ margin: "0 0 0.8rem", fontSize: "1.1rem", fontWeight: 600 }}>
+        {title}
+      </h3>
+      <ul
+        style={{
+          margin: 0,
+          padding: 0,
+          listStyle: "none",
+          display: "flex",
+          flexDirection: "column",
+          gap: "0.5rem",
+        }}
+      >
+        {links.map((link, i) => (
+          <li
+            key={`link-${i}`}
+            style={{ overflow: "hidden", textOverflow: "ellipsis" }}
+          >
+            <a
+              href={link}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "0.5rem",
+                color: "#6c4f99",
+                textDecoration: "none",
+                fontWeight: 500,
+                whiteSpace: "nowrap",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                maxWidth: "100%",
+              }}
+            >
+              <span style={{ flexShrink: 0 }}>🔗</span>
+              <span style={{ overflow: "hidden", textOverflow: "ellipsis" }}>
+                {getDisplayUrl(link)}
+              </span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </Card>
+  );
+};
+
 const HomePage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [videoId, setVideoId] = useState(null);
@@ -321,6 +384,7 @@ const HomePage = () => {
   const [history, setHistory] = useState([]);
   const [historyOpen, setHistoryOpen] = useState(false);
   const isMobile = useMobile();
+  const [videoLinks, setVideoLinks] = useState([]);
 
   // Load history from localStorage on mount
   useEffect(() => {
@@ -334,29 +398,31 @@ const HomePage = () => {
 
   // Add to history after successful video processing
   const addToHistory = (data) => {
-    const { videoId, summary, transcript, steps, chunks, metadata } = data;
-    const title = metadata?.snippet?.title || videoId;
-    const thumbnail =
-      metadata?.snippet?.thumbnails?.default?.url ||
-      `https://img.youtube.com/vi/${videoId}/default.jpg`;
-    const date =
-      typeof window !== "undefined" ? new Date().toLocaleString() : "";
-    // Remove duplicates
-    const filtered = history.filter((item) => item.videoId !== videoId);
-    setHistory([
-      {
-        videoId,
-        title,
-        thumbnail,
-        date,
-        summary,
-        transcript,
-        steps,
-        chunks,
-        metadata,
-      },
-      ...filtered,
-    ]);
+    if (!data?.videoId) return;
+    const newItem = {
+      videoId: data.videoId,
+      url: url,
+      title: data?.metadata?.snippet?.title,
+      thumbnail: data?.metadata?.snippet?.thumbnails?.default?.url,
+      date: new Date().toLocaleDateString(),
+      videoData: data?.metadata?.snippet,
+      transcript: data.transcript,
+      summary: data.summary,
+      steps: stepsResults,
+      qaResults,
+      links: data.links || [], // Save links to history
+      selected: true,
+    };
+
+    const updatedHistory = [
+      newItem,
+      ...history
+        .filter((i) => i.videoId !== data.videoId)
+        .map((i) => ({ ...i, selected: false })),
+    ].slice(0, 50); // Limit to 50 items
+
+    setHistory(updatedHistory);
+    saveHistoryToStorage(updatedHistory);
   };
 
   // Placeholder function to handle form submission
@@ -384,6 +450,7 @@ const HomePage = () => {
       setTranscript(data.transcript || "");
       setSummary(data.summary || "");
       setChunks(data.chunks || []); // Store chunks for Q&A
+      setVideoLinks(data.links || []);
       addToHistory(data);
     } catch (err) {
       console.error("Error submitting URL:", err);
@@ -455,10 +522,19 @@ const HomePage = () => {
     setStepsOpen(false);
     setPlayerTime(0);
     setPlayerKey((k) => k + 1);
-    setHistory((h) =>
-      h.map((hitem) => ({ ...hitem, selected: hitem.videoId === item.videoId }))
-    );
-    if (isMobile) setHistoryOpen(false);
+    setVideoLinks(item.links || []);
+
+    // Update selected status in history
+    const updatedHistory = history.map((h) => ({
+      ...h,
+      selected: h.videoId === item.videoId,
+    }));
+    setHistory(updatedHistory);
+    saveHistoryToStorage(updatedHistory);
+
+    if (isMobile) {
+      setHistoryOpen(false);
+    }
   };
 
   // Remove from history
@@ -578,6 +654,8 @@ const HomePage = () => {
                   />
                 </div>
               </div>
+              {/* Display links if available */}
+              <LinksCard links={videoLinks} />
               {/* Collapsible Summary Card */}
               <Card>
                 <button

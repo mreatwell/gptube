@@ -25,6 +25,20 @@ function extractVideoId(url) {
   }
 }
 
+// Helper to extract links from text
+function extractLinksFromText(text) {
+  const urlRegex = /(https?:\/\/[^\s]+)/g;
+  const matches = text.match(urlRegex) || [];
+  return matches.filter((url) => {
+    try {
+      new URL(url);
+      return true;
+    } catch {
+      return false;
+    }
+  });
+}
+
 // Fetch video metadata from YouTube Data API
 async function fetchVideoMetadata(videoId) {
   const url = `https://www.googleapis.com/youtube/v3/videos?part=snippet,contentDetails&id=${videoId}&key=${YOUTUBE_API_KEY}`;
@@ -53,7 +67,10 @@ async function fetchTranscriptFromPython(videoId) {
     if (!data.transcript) {
       return { error: "not_available" };
     }
-    return { transcript: data.transcript };
+    return {
+      transcript: data.transcript,
+      links: data.links || [],
+    };
   } catch (err) {
     console.error("Error fetching transcript from Python service:", err);
     return { error: "service_unavailable" };
@@ -162,6 +179,11 @@ export default async function handler(req, res) {
   try {
     // Fetch video metadata
     const metadata = await fetchVideoMetadata(videoId);
+
+    // Extract links from video description
+    const description = metadata?.snippet?.description || "";
+    const descriptionLinks = extractLinksFromText(description);
+
     // Fetch transcript from Python microservice
     const transcriptResult = await fetchTranscriptFromPython(videoId);
     let summary = null;
@@ -176,6 +198,11 @@ export default async function handler(req, res) {
       });
     }
     const transcript = transcriptResult.transcript || null;
+    const transcriptLinks = transcriptResult.links || [];
+
+    // Combine links from description and transcript, remove duplicates
+    const allLinks = [...new Set([...descriptionLinks, ...transcriptLinks])];
+
     if (transcript) {
       summary = await summarizeTranscript(transcript);
       // Chunk transcript and get embeddings
@@ -198,6 +225,7 @@ export default async function handler(req, res) {
       transcript,
       summary,
       chunks, // array of { idx, text, embedding }
+      links: allLinks, // Combined links from transcript and description
     });
   } catch (err) {
     console.error("API error:", err);
