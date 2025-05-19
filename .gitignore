@@ -168,3 +168,6 @@ $RECYCLE.BIN/
 !.vscode/launch.json
 !.vscode/extensions.json
 *.*.swp venv/
+
+*storybook.log
+storybook-static

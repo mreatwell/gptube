@@ -1,11 +1,18 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, {
+  useState,
+  useRef,
+  useEffect,
+  useCallback,
+  useMemo,
+} from "react";
 import UrlInputForm from "../components/UrlInputForm"; // Import the component
 import Button from "../components/ui/Button/Button"; // Import the new Button component
 import Radio from "../components/ui/Radio/Radio"; // Import the Radio component
 import Select from "../components/ui/Select/Select"; // Import the Select component
 import Modal from "../components/ui/Modal/Modal"; // Import the Modal component
 
-const Card = ({ children, style = {}, ...props }) => (
+// Memoize the Card component to prevent unnecessary re-renders
+const Card = React.memo(({ children, style = {}, ...props }) => (
   <div
     style={{
       background: "var(--color-surface, #f8f6ff)",
@@ -23,9 +30,11 @@ const Card = ({ children, style = {}, ...props }) => (
   >
     {children}
   </div>
-);
+));
+Card.displayName = "Card";
 
-const Feedback = ({ type, message }) => {
+// Memoize the Feedback component
+const Feedback = React.memo(({ type, message }) => {
   if (!message) return null;
   let color = "#388e3c",
     icon = "✅";
@@ -54,7 +63,8 @@ const Feedback = ({ type, message }) => {
       <span aria-hidden="true">{icon}</span> <span>{message}</span>
     </div>
   );
-};
+});
+Feedback.displayName = "Feedback";
 
 const useMobile = () => {
   const [isMobile, setIsMobile] = useState(false);
@@ -94,7 +104,7 @@ const parseTimestamp = (str) => {
   return 0;
 };
 
-// Helper: linkify timestamps in text
+// Regular function for linkifying timestamps - remove useCallback from here
 const linkifyTimestamps = (text, onClick) => {
   if (!text) return null;
   const regex = /\b(\d{1,2}:\d{2}(?::\d{2})?)\b/g;
@@ -294,19 +304,19 @@ const exportText = (text, filename) => {
   }, 0);
 };
 
-// Component to display links from the transcript
-const LinksCard = ({ links = [], title = "Links from Video" }) => {
-  if (!links || links.length === 0) return null;
+// Helper function to get display URL (moved outside component)
+const getDisplayUrl = (url) => {
+  try {
+    const urlObj = new URL(url);
+    return `${urlObj.hostname}${urlObj.pathname.replace(/\/$/, "")}`;
+  } catch {
+    return url;
+  }
+};
 
-  // Display hostname for better readability
-  const getDisplayUrl = (url) => {
-    try {
-      const urlObj = new URL(url);
-      return `${urlObj.hostname}${urlObj.pathname.replace(/\/$/, "")}`;
-    } catch {
-      return url;
-    }
-  };
+// Memoize the LinksCard component
+const LinksCard = React.memo(({ links = [], title = "Links from Video" }) => {
+  if (!links || links.length === 0) return null;
 
   return (
     <Card style={{ marginTop: "1rem" }}>
@@ -355,6 +365,53 @@ const LinksCard = ({ links = [], title = "Links from Video" }) => {
       </ul>
     </Card>
   );
+});
+LinksCard.displayName = "LinksCard";
+
+// Progress bar component
+const ProgressBar = ({ percent, currentStage, isLoading }) => {
+  if (!isLoading) return null;
+  return (
+    <div
+      style={{
+        marginTop: "1.5rem",
+        maxWidth: 700,
+        margin: "1.5rem auto",
+        textAlign: "left",
+      }}
+    >
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          marginBottom: "0.5rem",
+          fontSize: "0.9rem",
+          color: "#555",
+        }}
+      >
+        <div>{currentStage}</div>
+        <div>{percent}%</div>
+      </div>
+      <div
+        style={{
+          height: 8,
+          background: "#e0e0e0",
+          borderRadius: 4,
+          overflow: "hidden",
+          display: "flex",
+        }}
+      >
+        <div
+          style={{
+            width: `${percent}%`,
+            background: "linear-gradient(90deg, #6c4f99 0%, #9c6bde 100%)",
+            borderRadius: 4,
+            transition: "width 0.3s ease",
+          }}
+        />
+      </div>
+    </div>
+  );
 };
 
 const HomePage = () => {
@@ -385,93 +442,259 @@ const HomePage = () => {
   const [historyOpen, setHistoryOpen] = useState(false);
   const isMobile = useMobile();
   const [videoLinks, setVideoLinks] = useState([]);
+  const [currentUrl, setCurrentUrl] = useState(""); // Store the current URL
+  const [processingProgress, setProcessingProgress] = useState({
+    percent: 0,
+    currentStage: "Starting...",
+  });
 
   // Load history from localStorage on mount
   useEffect(() => {
-    setHistory(getHistoryFromStorage());
+    // Load only once during component mount
+    const savedHistory = getHistoryFromStorage();
+    setHistory(savedHistory);
   }, []);
 
   // Save history to localStorage on change
   useEffect(() => {
-    saveHistoryToStorage(history);
+    if (history.length > 0) {
+      saveHistoryToStorage(history);
+    }
   }, [history]);
 
-  // Add to history after successful video processing
-  const addToHistory = (data) => {
-    if (!data?.videoId) return;
-    const newItem = {
-      videoId: data.videoId,
-      url: url,
-      title: data?.metadata?.snippet?.title,
-      thumbnail: data?.metadata?.snippet?.thumbnails?.default?.url,
-      date: new Date().toLocaleDateString(),
-      videoData: data?.metadata?.snippet,
-      transcript: data.transcript,
-      summary: data.summary,
-      steps: stepsResults,
-      qaResults,
-      links: data.links || [], // Save links to history
-      selected: true,
-    };
+  // Use useCallback for event handlers to prevent unnecessary re-renders
+  const addToHistory = useCallback(
+    (data) => {
+      if (!data?.videoId) return;
+      const newItem = {
+        videoId: data.videoId,
+        url: currentUrl,
+        title: data?.metadata?.snippet?.title,
+        thumbnail: data?.metadata?.snippet?.thumbnails?.default?.url,
+        date: new Date().toLocaleDateString(),
+        videoData: data?.metadata?.snippet,
+        transcript: data.transcript,
+        summary: data.summary,
+        steps: data.steps || steps,
+        qaResults: qaAnswer,
+        links: data.links || [], // Save links to history
+        selected: true,
+      };
 
-    const updatedHistory = [
-      newItem,
-      ...history
-        .filter((i) => i.videoId !== data.videoId)
-        .map((i) => ({ ...i, selected: false })),
-    ].slice(0, 50); // Limit to 50 items
+      setHistory((prevHistory) => {
+        const updatedHistory = [
+          newItem,
+          ...prevHistory
+            .filter((i) => i.videoId !== data.videoId)
+            .map((i) => ({ ...i, selected: false })),
+        ].slice(0, 50); // Limit to 50 items
 
-    setHistory(updatedHistory);
-    saveHistoryToStorage(updatedHistory);
-  };
-
-  // Placeholder function to handle form submission
-  const handleUrlSubmit = async (url) => {
-    console.log("Submitted URL:", url);
-    setIsLoading(true);
-    setVideoId(null);
-    setVideoStatus(null);
-    setApiMessage("");
-    setError(null);
-
-    try {
-      const res = await fetch("/api/videos", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ url }),
+        saveHistoryToStorage(updatedHistory);
+        return updatedHistory;
       });
-      const data = await res.json();
-      if (!res.ok) {
-        throw new Error(data.error || "Unknown error from API");
-      }
-      setVideoId(data.videoId);
-      setVideoStatus(data.status);
-      setApiMessage(data.message || "");
-      setTranscript(data.transcript || "");
-      setSummary(data.summary || "");
-      setChunks(data.chunks || []); // Store chunks for Q&A
-      setVideoLinks(data.links || []);
-      addToHistory(data);
-    } catch (err) {
-      console.error("Error submitting URL:", err);
-      setError(
-        err.message || "Failed to process URL. Please check the format."
-      );
-      setSummary("");
-      setChunks([]);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    },
+    [currentUrl, steps, qaAnswer]
+  ); // Dependencies
 
-  // Helper for feedback type
-  const getFeedbackType = () => {
+  // Memoize URL submission handler with polling mechanism
+  const handleUrlSubmit = useCallback(
+    async (url) => {
+      console.log("Submitted URL:", url);
+      setIsLoading(true);
+      setVideoId(null);
+      setVideoStatus(null);
+      setApiMessage("");
+      setError(null);
+      setCurrentUrl(url); // Store the current URL
+      setSteps(""); // Clear previous steps
+      setStepsLoading(true); // Show steps loading state
+      setProcessingProgress({ percent: 0, currentStage: "Starting..." });
+
+      try {
+        const res = await fetch("/api/videos", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ url }),
+        });
+
+        if (!res.ok) {
+          const errorData = await res.json();
+          throw new Error(errorData.error || "Unknown error from API");
+        }
+
+        const data = await res.json();
+
+        // Update with initial data
+        setVideoId(data.videoId);
+        setVideoStatus(data.status);
+        setApiMessage(data.message || "");
+        setProcessingProgress(
+          data.progress || { percent: 0, currentStage: "Processing..." }
+        );
+
+        // Start displaying what we have
+        if (data.transcript) setTranscript(data.transcript);
+        if (data.metadata) setVideoLinks(data.links || []);
+
+        // If data is complete, update all states
+        if (data.summary) setSummary(data.summary);
+        if (data.steps) {
+          setSteps(data.steps);
+          setStepsShowMore(data.stepsCutoff || false);
+        }
+        if (data.chunks) setChunks(data.chunks || []);
+
+        // If not complete and not from cache, start polling for updates
+        if (data.status !== "complete" && !data.fromCache) {
+          let attempts = 0;
+          const maxAttempts = 30; // 30 seconds max
+          const pollInterval = 1000; // 1 second
+
+          const pollForUpdates = async () => {
+            if (attempts >= maxAttempts) {
+              setIsLoading(false);
+              setStepsLoading(false);
+              console.log("Polling timed out");
+              return;
+            }
+
+            try {
+              const pollRes = await fetch(
+                `/api/videos-status?videoId=${data.videoId}`
+              );
+              if (!pollRes.ok) {
+                throw new Error("Failed to fetch status update");
+              }
+
+              const pollData = await pollRes.json();
+              setProcessingProgress(
+                pollData.progress || { percent: 100, currentStage: "Complete" }
+              );
+
+              // Update with any new data
+              if (pollData.transcript) setTranscript(pollData.transcript);
+              if (pollData.summary) setSummary(pollData.summary);
+              if (pollData.steps) {
+                setSteps(pollData.steps);
+                setStepsShowMore(pollData.stepsCutoff || false);
+              }
+              if (pollData.chunks) setChunks(pollData.chunks || []);
+              if (pollData.links) setVideoLinks(pollData.links || []);
+
+              // If processing is complete, stop polling
+              if (
+                pollData.status === "complete" ||
+                pollData.progress?.percent >= 100
+              ) {
+                setIsLoading(false);
+                setStepsLoading(false);
+                addToHistory(pollData);
+                return;
+              }
+
+              // Continue polling
+              attempts++;
+              setTimeout(pollForUpdates, pollInterval);
+            } catch (err) {
+              console.error("Polling error:", err);
+              attempts++;
+              setTimeout(pollForUpdates, pollInterval);
+            }
+          };
+
+          // Start polling after a short delay
+          setTimeout(pollForUpdates, pollInterval);
+        } else {
+          // Data is already complete
+          setIsLoading(false);
+          setStepsLoading(false);
+          addToHistory(data);
+        }
+      } catch (err) {
+        console.error("Error submitting URL:", err);
+        setError(
+          err.message || "Failed to process URL. Please check the format."
+        );
+        setSummary("");
+        setChunks([]);
+        setIsLoading(false);
+        setStepsLoading(false);
+      }
+    },
+    [addToHistory]
+  ); // Dependencies
+
+  // Memoize this computation to prevent recalculating on every render
+  const feedbackType = useMemo(() => {
     if (error)
       return error.toLowerCase().includes("unavailable") ? "warn" : "error";
     if (apiMessage && apiMessage.toLowerCase().includes("found"))
       return "success";
     return null;
-  };
+  }, [error, apiMessage]);
+
+  // Memoize video seeking callback
+  const seekTo = useCallback((seconds) => {
+    setPlayerTime(seconds);
+    setPlayerKey((k) => k + 1); // force iframe reload
+  }, []);
+
+  // Memoize embed URL calculation
+  const embedUrl = useMemo(() => {
+    if (!videoId) return "";
+    let url = `https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1`;
+    if (playerTime > 0) url += `&start=${playerTime}&autoplay=1`;
+    else url += `&autoplay=0`;
+    return url;
+  }, [videoId, playerTime]);
+
+  // Load from history
+  const loadFromHistory = useCallback(
+    (item) => {
+      setVideoId(item.videoId);
+      setSummary(item.summary || "");
+      setTranscript(item.transcript || "");
+      setSteps(item.steps || "");
+      setChunks(item.chunks || []);
+      setApiMessage("Loaded from history.");
+      setVideoStatus("history");
+      setSummaryOpen(true);
+      setTranscriptOpen(false);
+      setQaOpen(false);
+      setStepsOpen(true); // Open steps section by default when loading from history
+      setPlayerTime(0);
+      setPlayerKey((k) => k + 1);
+      setVideoLinks(item.links || []);
+
+      // Update selected status in history
+      setHistory((prevHistory) => {
+        const updatedHistory = prevHistory.map((h) => ({
+          ...h,
+          selected: h.videoId === item.videoId,
+        }));
+        saveHistoryToStorage(updatedHistory);
+        return updatedHistory;
+      });
+
+      if (isMobile) {
+        setHistoryOpen(false);
+      }
+    },
+    [isMobile]
+  );
+
+  const removeFromHistory = useCallback((videoId) => {
+    setHistory((h) => {
+      const updated = h.filter((item) => item.videoId !== videoId);
+      saveHistoryToStorage(updated);
+      return updated;
+    });
+  }, []);
+
+  const clearHistory = useCallback(() => {
+    setHistory([]);
+    saveHistoryToStorage([]);
+  }, []);
 
   // Copy hooks
   const [summaryCopied, copySummary, summaryManualCopy, setSummaryManualCopy] =
@@ -492,60 +715,10 @@ const HomePage = () => {
     setPlayerKey((k) => k + 1);
   }, [videoId]);
 
-  // Helper: Seek video by updating iframe src
-  const seekTo = (seconds) => {
-    setPlayerTime(seconds);
-    setPlayerKey((k) => k + 1); // force iframe reload
-  };
-
-  // Helper: get embed URL with start param and autoplay
-  const getEmbedUrl = () => {
-    if (!videoId) return "";
-    let url = `https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1`;
-    if (playerTime > 0) url += `&start=${playerTime}&autoplay=1`;
-    else url += `&autoplay=0`;
-    return url;
-  };
-
-  // Load from history
-  const loadFromHistory = (item) => {
-    setVideoId(item.videoId);
-    setSummary(item.summary || "");
-    setTranscript(item.transcript || "");
-    setSteps(item.steps || "");
-    setChunks(item.chunks || []);
-    setApiMessage("Loaded from history.");
-    setVideoStatus("history");
-    setSummaryOpen(true);
-    setTranscriptOpen(false);
-    setQaOpen(false);
-    setStepsOpen(false);
-    setPlayerTime(0);
-    setPlayerKey((k) => k + 1);
-    setVideoLinks(item.links || []);
-
-    // Update selected status in history
-    const updatedHistory = history.map((h) => ({
-      ...h,
-      selected: h.videoId === item.videoId,
-    }));
-    setHistory(updatedHistory);
-    saveHistoryToStorage(updatedHistory);
-
-    if (isMobile) {
-      setHistoryOpen(false);
-    }
-  };
-
-  // Remove from history
-  const removeFromHistory = (videoId) => {
-    setHistory((h) => h.filter((item) => item.videoId !== videoId));
-  };
-
-  // Clear all history
-  const clearHistory = () => {
-    setHistory([]);
-  };
+  // Create a memoized version of linkifyTimestamps inside the component
+  const memoizedLinkifyTimestamps = useCallback((text, onClick) => {
+    return linkifyTimestamps(text, onClick);
+  }, []);
 
   return (
     <div
@@ -601,11 +774,19 @@ const HomePage = () => {
             margin: "0 auto",
           }}
         >
-          <h1
-            style={{ fontSize: "2.1rem", fontWeight: 700, margin: "0 0 0.5em" }}
-          >
-            Welcome to gptube - YouTube Tutorial Companion
-          </h1>
+          <img
+            src="/logo.png"
+            alt="GPTube Logo"
+            style={{
+              width: "min(320px, 90vw)",
+              maxWidth: "100%",
+              height: "auto",
+              marginBottom: 24,
+              display: "block",
+              marginLeft: "auto",
+              marginRight: "auto",
+            }}
+          />
           <p style={{ fontSize: "1.1rem", marginBottom: "1.5rem" }}>
             Submit a YouTube URL to get started!
           </p>
@@ -614,8 +795,16 @@ const HomePage = () => {
             isLoading={isLoading}
             apiError={error}
           />
-          <Feedback type={getFeedbackType()} message={error || apiMessage} />
-          {videoId && !isLoading && (
+          <Feedback type={feedbackType} message={error || apiMessage} />
+
+          {/* Progress bar */}
+          <ProgressBar
+            percent={processingProgress.percent}
+            currentStage={processingProgress.currentStage}
+            isLoading={isLoading}
+          />
+
+          {videoId && (
             <div style={{ marginTop: "1.5rem" }}>
               {/* Embedded YouTube Video */}
               <div
@@ -638,7 +827,7 @@ const HomePage = () => {
                   <iframe
                     key={playerKey}
                     ref={videoRef}
-                    src={getEmbedUrl()}
+                    src={embedUrl}
                     title="YouTube video player"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                     allowFullScreen
@@ -655,8 +844,9 @@ const HomePage = () => {
                 </div>
               </div>
               {/* Display links if available */}
-              <LinksCard links={videoLinks} />
-              {/* Collapsible Summary Card */}
+              {videoLinks.length > 0 && <LinksCard links={videoLinks} />}
+
+              {/* Collapsible Summary Card - Show loading state */}
               <Card>
                 <button
                   onClick={() => setSummaryOpen((v) => !v)}
@@ -675,76 +865,326 @@ const HomePage = () => {
                     gap: 6,
                   }}
                 >
-                  {summaryOpen ? "▼" : "►"} AI Summary
+                  {summaryOpen ? "▼" : "►"} AI Summary{" "}
+                  {!summary && isLoading && "- Generating..."}
                 </button>
-                {summaryOpen && summary && (
+                {summaryOpen && (
                   <div id="summary-content">
-                    <div
-                      style={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                      }}
-                    >
-                      <span />
-                      <Button
-                        onClick={copySummary}
-                        size="sm"
-                        aria-label="Copy summary"
-                        style={{ fontSize: "1rem", padding: "0.3em 0.8em" }}
-                      >
-                        {summaryCopied ? "Copied!" : "Copy"}
-                      </Button>
-                      <Button
-                        onClick={() => exportText(summary, "summary.txt")}
-                        size="sm"
-                        aria-label="Export summary as .txt"
+                    {summary ? (
+                      <>
+                        <div
+                          style={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                          }}
+                        >
+                          <span />
+                          <Button
+                            onClick={copySummary}
+                            size="sm"
+                            aria-label="Copy summary"
+                            style={{ fontSize: "1rem", padding: "0.3em 0.8em" }}
+                          >
+                            {summaryCopied ? "Copied!" : "Copy"}
+                          </Button>
+                          <Button
+                            onClick={() => exportText(summary, "summary.txt")}
+                            size="sm"
+                            aria-label="Export summary as .txt"
+                            style={{
+                              fontSize: "1rem",
+                              padding: "0.3em 0.8em",
+                              marginLeft: 8,
+                            }}
+                          >
+                            Export
+                          </Button>
+                        </div>
+                        {summaryManualCopy && (
+                          <div style={{ marginTop: 8 }}>
+                            <p style={{ color: "#b26a00", fontWeight: 500 }}>
+                              Copy to clipboard is not supported. Please select
+                              and copy manually:
+                            </p>
+                            <textarea
+                              value={summary}
+                              readOnly
+                              style={{
+                                width: "100%",
+                                minHeight: 80,
+                                fontSize: 15,
+                              }}
+                            />
+                            <Button
+                              onClick={() => setSummaryManualCopy(false)}
+                              size="sm"
+                              style={{ marginTop: 6 }}
+                            >
+                              Close
+                            </Button>
+                          </div>
+                        )}
+                        <div
+                          style={{
+                            whiteSpace: "pre-wrap",
+                            marginTop: 8,
+                            textAlign: "left",
+                          }}
+                        >
+                          {memoizedLinkifyTimestamps(
+                            summary && !/\d{1,2}:\d{2}/.test(summary)
+                              ? summary + "\nSee 2:15 for the demo."
+                              : summary,
+                            seekTo
+                          )}
+                        </div>
+                      </>
+                    ) : (
+                      <div
                         style={{
-                          fontSize: "1rem",
-                          padding: "0.3em 0.8em",
-                          marginLeft: 8,
+                          padding: "1rem 0",
+                          color: "#666",
+                          textAlign: "center",
                         }}
                       >
-                        Export
-                      </Button>
-                    </div>
-                    {summaryManualCopy && (
-                      <div style={{ marginTop: 8 }}>
-                        <p style={{ color: "#b26a00", fontWeight: 500 }}>
-                          Copy to clipboard is not supported. Please select and
-                          copy manually:
-                        </p>
-                        <textarea
-                          value={summary}
-                          readOnly
-                          style={{ width: "100%", minHeight: 80, fontSize: 15 }}
-                        />
-                        <Button
-                          onClick={() => setSummaryManualCopy(false)}
-                          size="sm"
-                          style={{ marginTop: 6 }}
-                        >
-                          Close
-                        </Button>
+                        {isLoading ? (
+                          <p>Generating summary... This may take a moment.</p>
+                        ) : (
+                          <p>No summary available.</p>
+                        )}
                       </div>
                     )}
-                    <div
-                      style={{
-                        whiteSpace: "pre-wrap",
-                        marginTop: 8,
-                        textAlign: "left",
-                      }}
-                    >
-                      {linkifyTimestamps(
-                        summary && !/\d{1,2}:\d{2}/.test(summary)
-                          ? summary + "\nSee 2:15 for the demo."
-                          : summary,
-                        seekTo
-                      )}
-                    </div>
                   </div>
                 )}
               </Card>
+
+              {/* Extracted Steps Card - Moved up in the order with loading state */}
+              <Card style={{ background: "#f1f8e9" }}>
+                <button
+                  onClick={() => setStepsOpen((v) => !v)}
+                  aria-expanded={stepsOpen}
+                  aria-controls="steps-content"
+                  style={{
+                    background: "none",
+                    border: "none",
+                    color: "#2e4d1c",
+                    fontWeight: 700,
+                    fontSize: "1.1rem",
+                    cursor: "pointer",
+                    marginBottom: 8,
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 6,
+                  }}
+                >
+                  {stepsOpen ? "▼" : "►"} Extracted Steps{" "}
+                  {!steps && isLoading && "- Extracting..."}
+                </button>
+                {stepsOpen && transcript && (
+                  <div id="steps-content">
+                    {steps ? (
+                      <>
+                        <div
+                          style={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                          }}
+                        >
+                          <span />
+                          <Button
+                            onClick={copySteps}
+                            size="sm"
+                            aria-label="Copy steps"
+                            style={{ fontSize: "1rem", padding: "0.3em 0.8em" }}
+                            disabled={!steps || stepsLoading}
+                          >
+                            {stepsCopied ? "Copied!" : "Copy"}
+                          </Button>
+                          <Button
+                            onClick={() => exportText(steps, "steps.txt")}
+                            size="sm"
+                            aria-label="Export steps as .txt"
+                            style={{
+                              fontSize: "1rem",
+                              padding: "0.3em 0.8em",
+                              marginLeft: 8,
+                            }}
+                            disabled={!steps || stepsLoading}
+                          >
+                            Export
+                          </Button>
+                        </div>
+                        {stepsManualCopy && (
+                          <div style={{ marginTop: 8 }}>
+                            <p style={{ color: "#b26a00", fontWeight: 500 }}>
+                              Copy to clipboard is not supported. Please select
+                              and copy manually:
+                            </p>
+                            <textarea
+                              value={steps}
+                              readOnly
+                              style={{
+                                width: "100%",
+                                minHeight: 80,
+                                fontSize: 15,
+                              }}
+                            />
+                            <Button
+                              onClick={() => setStepsManualCopy(false)}
+                              size="sm"
+                              style={{ marginTop: 6 }}
+                            >
+                              Close
+                            </Button>
+                          </div>
+                        )}
+                        {stepsLoading && (
+                          <div
+                            style={{ margin: "15px 0", textAlign: "center" }}
+                          >
+                            <p>Extracting steps...</p>
+                          </div>
+                        )}
+                        {!steps && !stepsLoading && (
+                          <Button
+                            onClick={async () => {
+                              setStepsLoading(true);
+                              setStepsError("");
+                              setStepsShowMore(false);
+                              try {
+                                const res = await fetch("/api/videos-steps", {
+                                  method: "POST",
+                                  headers: {
+                                    "Content-Type": "application/json",
+                                  },
+                                  body: JSON.stringify({ transcript }),
+                                });
+                                const data = await res.json();
+                                if (!res.ok)
+                                  throw new Error(
+                                    data.error || "Unknown error from steps API"
+                                  );
+                                setSteps(data.steps || "No steps found.");
+                                setStepsShowMore(data.cutoff || false);
+
+                                // Update the history with steps
+                                const currentItem = history.find(
+                                  (h) => h.videoId === videoId
+                                );
+                                if (currentItem) {
+                                  addToHistory({
+                                    ...currentItem,
+                                    steps: data.steps,
+                                  });
+                                }
+                              } catch (err) {
+                                setStepsError(
+                                  err.message || "Failed to extract steps."
+                                );
+                              } finally {
+                                setStepsLoading(false);
+                              }
+                            }}
+                            disabled={stepsLoading}
+                            style={{ margin: "12px 0" }}
+                            aria-label="Extract all steps from this video"
+                          >
+                            {stepsLoading
+                              ? "Extracting steps..."
+                              : "Extract all steps from this video"}
+                          </Button>
+                        )}
+                        {stepsError && (
+                          <Feedback type="error" message={stepsError} />
+                        )}
+                        {steps && (
+                          <div
+                            style={{
+                              marginTop: 6,
+                              whiteSpace: "pre-wrap",
+                              fontSize: 16,
+                              lineHeight: 1.7,
+                              maxHeight: 350,
+                              overflowY: "auto",
+                              textAlign: "left",
+                            }}
+                          >
+                            {memoizedLinkifyTimestamps(steps, seekTo)}
+                          </div>
+                        )}
+                        {stepsShowMore && (
+                          <Button
+                            onClick={async () => {
+                              setStepsLoading(true);
+                              setStepsError("");
+                              try {
+                                const res = await fetch("/api/videos-steps", {
+                                  method: "POST",
+                                  headers: {
+                                    "Content-Type": "application/json",
+                                  },
+                                  body: JSON.stringify({
+                                    transcript,
+                                    continueFrom: steps,
+                                  }),
+                                });
+                                const data = await res.json();
+                                if (!res.ok)
+                                  throw new Error(
+                                    data.error || "Unknown error from steps API"
+                                  );
+                                const updatedSteps =
+                                  steps + "\n" + (data.steps || "");
+                                setSteps(updatedSteps);
+                                setStepsShowMore(data.cutoff || false);
+
+                                // Update the history with updated steps
+                                const currentItem = history.find(
+                                  (h) => h.videoId === videoId
+                                );
+                                if (currentItem) {
+                                  addToHistory({
+                                    ...currentItem,
+                                    steps: updatedSteps,
+                                  });
+                                }
+                              } catch (err) {
+                                setStepsError(
+                                  err.message || "Failed to extract more steps."
+                                );
+                              } finally {
+                                setStepsLoading(false);
+                              }
+                            }}
+                            disabled={stepsLoading}
+                            style={{ marginTop: 12 }}
+                            aria-label="Show more extracted steps"
+                          >
+                            {stepsLoading ? "Loading more..." : "Show more"}
+                          </Button>
+                        )}
+                      </>
+                    ) : (
+                      <div
+                        style={{
+                          padding: "1rem 0",
+                          color: "#666",
+                          textAlign: "center",
+                        }}
+                      >
+                        {isLoading ? (
+                          <p>Extracting steps... This may take a moment.</p>
+                        ) : (
+                          <p>No steps available.</p>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </Card>
+
               {/* Collapsible Transcript Card */}
               <Card>
                 <button
@@ -833,6 +1273,7 @@ const HomePage = () => {
                   </div>
                 )}
               </Card>
+
               {/* Collapsible Q&A Card */}
               <Card>
                 <button
@@ -996,169 +1437,6 @@ const HomePage = () => {
                   </div>
                 )}
               </Card>
-              {/* Collapsible Steps Card */}
-              <Card style={{ background: "#f1f8e9" }}>
-                <button
-                  onClick={() => setStepsOpen((v) => !v)}
-                  aria-expanded={stepsOpen}
-                  aria-controls="steps-content"
-                  style={{
-                    background: "none",
-                    border: "none",
-                    color: "#2e4d1c",
-                    fontWeight: 700,
-                    fontSize: "1.1rem",
-                    cursor: "pointer",
-                    marginBottom: 8,
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 6,
-                  }}
-                >
-                  {stepsOpen ? "▼" : "►"} Extracted Steps
-                </button>
-                {stepsOpen && transcript && (
-                  <div id="steps-content">
-                    <div
-                      style={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                      }}
-                    >
-                      <span />
-                      <Button
-                        onClick={copySteps}
-                        size="sm"
-                        aria-label="Copy steps"
-                        style={{ fontSize: "1rem", padding: "0.3em 0.8em" }}
-                      >
-                        {stepsCopied ? "Copied!" : "Copy"}
-                      </Button>
-                      <Button
-                        onClick={() => exportText(steps, "steps.txt")}
-                        size="sm"
-                        aria-label="Export steps as .txt"
-                        style={{
-                          fontSize: "1rem",
-                          padding: "0.3em 0.8em",
-                          marginLeft: 8,
-                        }}
-                      >
-                        Export
-                      </Button>
-                    </div>
-                    {stepsManualCopy && (
-                      <div style={{ marginTop: 8 }}>
-                        <p style={{ color: "#b26a00", fontWeight: 500 }}>
-                          Copy to clipboard is not supported. Please select and
-                          copy manually:
-                        </p>
-                        <textarea
-                          value={steps}
-                          readOnly
-                          style={{ width: "100%", minHeight: 80, fontSize: 15 }}
-                        />
-                        <Button
-                          onClick={() => setStepsManualCopy(false)}
-                          size="sm"
-                          style={{ marginTop: 6 }}
-                        >
-                          Close
-                        </Button>
-                      </div>
-                    )}
-                    <Button
-                      onClick={async () => {
-                        setStepsLoading(true);
-                        setStepsError("");
-                        setStepsShowMore(false);
-                        try {
-                          const res = await fetch("/api/videos-steps", {
-                            method: "POST",
-                            headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify({ transcript }),
-                          });
-                          const data = await res.json();
-                          if (!res.ok)
-                            throw new Error(
-                              data.error || "Unknown error from steps API"
-                            );
-                          setSteps(data.steps || "No steps found.");
-                          setStepsShowMore(data.cutoff || false);
-                        } catch (err) {
-                          setStepsError(
-                            err.message || "Failed to extract steps."
-                          );
-                        } finally {
-                          setStepsLoading(false);
-                        }
-                      }}
-                      disabled={stepsLoading}
-                      style={{ margin: "12px 0" }}
-                      aria-label="Extract all steps from this video"
-                    >
-                      {stepsLoading
-                        ? "Extracting steps..."
-                        : "Extract all steps from this video"}
-                    </Button>
-                    {stepsError && (
-                      <Feedback type="error" message={stepsError} />
-                    )}
-                    {steps && (
-                      <div
-                        style={{
-                          marginTop: 6,
-                          whiteSpace: "pre-wrap",
-                          fontSize: 16,
-                          lineHeight: 1.7,
-                          maxHeight: 350,
-                          overflowY: "auto",
-                          textAlign: "left",
-                        }}
-                      >
-                        {linkifyTimestamps(steps, seekTo)}
-                      </div>
-                    )}
-                    {stepsShowMore && (
-                      <Button
-                        onClick={async () => {
-                          setStepsLoading(true);
-                          setStepsError("");
-                          try {
-                            const res = await fetch("/api/videos-steps", {
-                              method: "POST",
-                              headers: { "Content-Type": "application/json" },
-                              body: JSON.stringify({
-                                transcript,
-                                continueFrom: steps,
-                              }),
-                            });
-                            const data = await res.json();
-                            if (!res.ok)
-                              throw new Error(
-                                data.error || "Unknown error from steps API"
-                              );
-                            setSteps(steps + "\n" + (data.steps || ""));
-                            setStepsShowMore(data.cutoff || false);
-                          } catch (err) {
-                            setStepsError(
-                              err.message || "Failed to extract more steps."
-                            );
-                          } finally {
-                            setStepsLoading(false);
-                          }
-                        }}
-                        disabled={stepsLoading}
-                        style={{ marginTop: 12 }}
-                        aria-label="Show more extracted steps"
-                      >
-                        {stepsLoading ? "Loading more..." : "Show more"}
-                      </Button>
-                    )}
-                  </div>
-                )}
-              </Card>
             </div>
           )}
         </div>
@@ -1166,5 +1444,8 @@ const HomePage = () => {
     </div>
   );
 };
+
+// Add display name to HomePage component
+HomePage.displayName = "HomePage";
 
 export default HomePage;
