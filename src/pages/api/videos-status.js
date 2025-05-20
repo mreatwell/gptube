@@ -18,30 +18,16 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: "Missing videoId parameter" });
   }
 
-  // Look for any cache entries related to this videoId
-  const cacheKeyPattern = new RegExp(`video_${videoId}`);
-  let latestData = null;
-  let latestTimestamp = 0;
-
-  // Find the latest cache entry for this videoId
-  for (const [key, value] of CACHE.entries()) {
-    if (cacheKeyPattern.test(key) && value.timestamp > latestTimestamp) {
-      latestData = value;
-      latestTimestamp = value.timestamp;
+  // Call your FastAPI backend
+  const backendUrl = `https://yt-transcript-service.onrender.com/transcript/?url=https://www.youtube.com/watch?v=${videoId}`;
+  try {
+    const response = await fetch(backendUrl);
+    if (!response.ok) {
+      return res.status(response.status).json({ error: "Backend error" });
     }
+    const data = await response.json();
+    return res.status(200).json(data);
+  } catch (err) {
+    return res.status(500).json({ error: "Failed to fetch from backend" });
   }
-
-  if (!latestData) {
-    return res.status(404).json({
-      error: "No data found for this videoId",
-      progress: { percent: 0, currentStage: "Not found" },
-    });
-  }
-
-  // Set appropriate headers to prevent caching
-  res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
-  res.setHeader("Pragma", "no-cache");
-  res.setHeader("Expires", "0");
-
-  return res.status(200).json(latestData);
 }
