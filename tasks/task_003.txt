@@ -1,0 +1,37 @@
+# Task ID: 3
+# Title: Database Schema Design
+# Status: done
+# Dependencies: 1
+# Priority: high
+# Description: Design and document the database schema for the application
+# Details:
+Define data models, relationships, constraints, and indexes for Firestore collections. The `processed_videos` collection has been implemented with Document ID = YouTube Video ID and fields including `youtubeUrl`, `transcriptOriginal`, `summaryAI`, `stepsAI`, `clarificationsAI`, `processedAt`, `status`, and `errorMessage`. Documentation has been created in `docs/firestore-schema.md` outlining the current schema and future considerations. Continue to refine and expand the schema as needed for additional collections.
+
+# Test Strategy:
+Review schema design with team members to ensure it meets all data requirements and follows best practices. Validate the implemented Firestore schema against actual application requirements.
+
+# Subtasks:
+## 3.1. Define Firestore schema for processed_videos collection [done]
+### Dependencies: None
+### Description: Defined Firestore schema for the `processed_videos` collection (Document ID = YouTube Video ID) with key fields: `youtubeUrl`, `transcriptOriginal`, `summaryAI`, `stepsAI`, `clarificationsAI`, `processedAt`, `status`, `errorMessage`.
+### Details:
+
+
+## 3.2. Create schema documentation [done]
+### Dependencies: None
+### Description: Created documentation file `docs/firestore-schema.md` outlining the schema and future considerations.
+### Details:
+
+
+## 3.3. Define additional collection schemas [done]
+### Dependencies: None
+### Description: Define schemas for any additional collections needed by the application, following the patterns established in the processed_videos collection.
+### Details:
+
+
+## 3.4. Implement indexing strategy [done]
+### Dependencies: None
+### Description: Determine and document which fields need to be indexed for optimal query performance.
+### Details:
+
+

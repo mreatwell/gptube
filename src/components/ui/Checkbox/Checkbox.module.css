@@ -1,0 +1,28 @@
+/* src/components/ui/Checkbox/Checkbox.module.css */
+
+/* Example usage:
+.wrapper {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.input {
+  margin-right: 8px;
+  width: 16px;
+  height: 16px;
+}
+
+.label {
+  font-size: 1rem;
+}
+
+.disabled .label {
+  color: #666;
+}
+
+.wrapper.disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+*/
