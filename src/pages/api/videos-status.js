@@ -1,14 +1,12 @@
 import { NextApiRequest, NextApiResponse } from "next";
 
 // Access the same cache as the videos.js endpoint
-let CACHE = new Map();
-if (global._GPTUBE_CACHE) {
-  CACHE = global._GPTUBE_CACHE;
-} else {
-  global._GPTUBE_CACHE = CACHE;
-}
+let CACHE = global._GPTUBE_CACHE || new Map();
 
-export default async function handler(req, res) {
+export default function handler(req, res) {
+  console.log("Request method:", req.method);
+  console.log("Query params:", req.query);
+
   if (req.method !== "GET") {
     return res.status(405).json({ error: "Method not allowed" });
   }
@@ -18,16 +16,28 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: "Missing videoId parameter" });
   }
 
-  // Call your FastAPI backend
-  const backendUrl = `https://yt-transcript-service.onrender.com/transcript/?url=https://www.youtube.com/watch?v=${videoId}`;
-  try {
-    const response = await fetch(backendUrl);
-    if (!response.ok) {
-      return res.status(response.status).json({ error: "Backend error" });
-    }
-    const data = await response.json();
-    return res.status(200).json(data);
-  } catch (err) {
-    return res.status(500).json({ error: "Failed to fetch from backend" });
+  // Use the same cache key logic as /api/videos.js
+  const cacheKey = `video_${videoId}`;
+  const data = CACHE.get(cacheKey);
+
+  if (!data) {
+    // Not ready yet, still processing
+    return res.status(200).json({
+      status: "processing",
+      message: "Processing video...",
+      progress: { percent: 0, stages: [], currentStage: "Starting" },
+    });
   }
+
+  // If summary/steps/etc. are missing, still processing
+  if (data.status !== "complete") {
+    return res.status(200).json({
+      ...data,
+      status: "processing",
+      message: data.message || "Processing video...",
+    });
+  }
+
+  // All done!
+  return res.status(200).json(data);
 }

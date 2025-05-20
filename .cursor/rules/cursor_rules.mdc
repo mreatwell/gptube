@@ -3,7 +3,6 @@ description: Guidelines for creating and maintaining Cursor rules to ensure cons
 globs: .cursor/rules/*.mdc
 alwaysApply: true
 ---
-
 - **Required Rule Structure:**
   ```markdown
   ---
@@ -50,4 +49,37 @@ alwaysApply: true
   - Keep descriptions concise
   - Include both DO and DON'T examples
   - Reference actual code over theoretical examples
-  - Use consistent formatting across rules 
+  - Use consistent formatting across rules
+
+---
+description: Always specify the exact directory (path) for shell/terminal commands and offer to run them for the user
+globs: */**/*.md, */**/*.mdc
+alwaysApply: true
+---
+
+- **Always specify the full path or directory context for all shell/terminal command instructions**
+  - Before any command, include a `cd /path/to/directory` step or clearly state the working directory.
+  - When providing multiple commands, group them by directory context and clarify when to switch directories.
+  - Example:
+    ```sh
+    cd /Users/username/project/backend
+    source venv/bin/activate
+    uvicorn main:app --reload --port 8001
+    ```
+    _Run these in your terminal, in the order above, from the `backend` directory._
+  - For commands that should be run from the project root, explicitly state:
+    ```sh
+    cd /Users/username/project
+    npm run dev
+    ```
+    _Run this from the project root._
+
+- **Offer to run commands for the user in the correct directory**
+  - When possible, ask if the user would like the command executed for them.
+  - Example:
+    > Would you like me to run this for you in `/Users/username/project/backend`?
+
+- **Best Practices**
+  - Never assume the user's current working directory—always be explicit.
+  - If the user is unsure, clarify or confirm the directory before running commands.
+  - Reference this rule in all command-line instruction documentation and onboarding materials. 

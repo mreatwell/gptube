@@ -91,7 +91,14 @@ async function fetchTranscriptFromPython(videoId) {
 
 // Summarize transcript using OpenAI (gpt-4o)
 async function summarizeTranscript(transcript) {
-  if (!OPENAI_API_KEY) return null;
+  console.log(
+    "summarizeTranscript called. API key present:",
+    Boolean(OPENAI_API_KEY)
+  );
+  if (!OPENAI_API_KEY) {
+    console.log("OPENAI_API_KEY is missing!");
+    return null;
+  }
   try {
     const res = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
