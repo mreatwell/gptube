@@ -1,0 +1,63 @@
+{
+  "title": "Production Deployment of yt-transcript-service",
+  "description": "Guide for deploying the Python transcript service and integrating it with a Next.js frontend.",
+  "steps": [
+    {
+      "step": 1,
+      "title": "Prepare Python Project",
+      "details": [
+        "Ensure yt-transcript-service contains main.py (FastAPI app), requirements.txt, and optionally .gitignore/README.md.",
+        "requirements.txt should include: fastapi, uvicorn, youtube_transcript_api."
+      ]
+    },
+    {
+      "step": 2,
+      "title": "Push to GitHub",
+      "details": [
+        "Initialize git if needed.",
+        "Add and commit all files.",
+        "Create a new GitHub repo and push the code."
+      ]
+    },
+    {
+      "step": 3,
+      "title": "Deploy to Render (or Railway)",
+      "details": [
+        "Sign up at render.com or railway.app.",
+        "Create a new web service and connect your GitHub repo.",
+        "Set environment to Python 3.",
+        "Set start command: uvicorn main:app --host 0.0.0.0 --port 10000.",
+        "Deploy and obtain the public URL (e.g., https://yt-transcript-service.onrender.com)."
+      ]
+    },
+    {
+      "step": 4,
+      "title": "Connect Next.js App (Vercel)",
+      "details": [
+        "In Vercel, add an environment variable: TRANSCRIPT_API_URL with the public URL from the previous step.",
+        "Update Next.js API code to use this variable for transcript requests."
+      ]
+    },
+    {
+      "step": 5,
+      "title": "Redeploy and Test",
+      "details": [
+        "Redeploy the Next.js app on Vercel.",
+        "Test the workflow by submitting a YouTube URL and confirming transcript extraction works."
+      ]
+    },
+    {
+      "step": 6,
+      "title": "(Optional) Add CORS to FastAPI",
+      "details": [
+        "If calling the Python API directly from the browser, add CORS middleware to FastAPI.",
+        "See FastAPI docs for CORS setup."
+      ]
+    }
+  ],
+  "requirements": {
+    "python_dependencies": ["fastapi", "uvicorn", "youtube_transcript_api"],
+    "start_command": "uvicorn main:app --host 0.0.0.0 --port 10000",
+    "vercel_env_var": "TRANSCRIPT_API_URL"
+  }
+}
